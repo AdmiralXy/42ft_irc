@@ -3,4 +3,4 @@ project(42ft_irc)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(42ft_irc main.cpp)
+add_executable(42ft_irc main.cpp Server.h Utility.h User.h Channel.h Command.h)
