@@ -11,6 +11,9 @@ private:
 	bool                        _active;
 	std::string					_serverPassword;
 	std::string					_nickname;
+	std::string					_username;
+	bool						_registered;
+
 public:
 	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true) {}
 
@@ -31,16 +34,48 @@ public:
 					continue;
 				}
 				std::cout << "IN -> " << msg;
-				if (msg.find('\n') != std::string::npos) {
-					if (msg[0] != '\n')
-						msg.erase(msg.find('\n'), 1);
+				if (msg.find("\n") != std::string::npos) {
 					break;
 				}
 			}
 			if (bytesRecv <= 0)
 				return (-1);
 		}
-		_message.push_back(msg);
+		std::cout << "DEBUG: " << std::endl;
+		for (const char* p = msg.c_str(); *p != '\0'; ++p)
+		{
+			int c = (unsigned char) *p;
+
+			switch (c)
+			{
+				case '\\':
+					printf("\\\\");
+					break;
+				case '\n':
+					printf("\\n");
+					break;
+				case '\r':
+					printf("\\r");
+					break;
+				case '\t':
+					printf("\\t");
+					break;
+
+				default:
+					if (isprint(c))
+					{
+						putchar(c);
+					}
+					else
+					{
+						printf("\\x%X", c);
+					}
+					break;
+			}
+		}
+		std::cout << std::endl << "!DEBUG: " << std::endl << std::endl << std::endl << std::endl;
+		std::vector<std::string> vector = split(msg, "\r\n");
+		_message.insert(_message.begin(), vector.begin(), vector.end());
 		return (0);
 	}
 
@@ -64,7 +99,7 @@ public:
 		_host = host;
 	}
 
-	std::vector<std::string> getMessage() const
+	std::vector<std::string> &getMessage()
 	{
 		return _message;
 	}
@@ -103,4 +138,40 @@ public:
 	{
 		_nickname = nickname;
 	}
+
+	const std::string &getUsername() const
+	{
+		return _username;
+	}
+
+	void setUsername(const std::string &username)
+	{
+		_username = username;
+	}
+
+	bool isRegistered() const
+	{
+		return _registered;
+	}
+
+	void setRegistered(bool registered)
+	{
+		_registered = registered;
+	}
+private:
+	static std::vector<std::string> split(const std::string& s, const std::string& delimiter) {
+		size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+		std::string token;
+		std::vector<std::string> res;
+
+		while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
+			token = s.substr (pos_start, pos_end - pos_start);
+			pos_start = pos_end + delim_len;
+			res.push_back (token);
+		}
+
+		res.push_back(s.substr(pos_start));
+		return res;
+	}
+
 };

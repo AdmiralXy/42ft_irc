@@ -7,4 +7,4 @@ add_compile_options(-Wall -Wextra -pedantic -Werror -Iincludes)
 
 include_directories(includes)
 
-add_executable(42ft_irc main.cpp includes/Server.h includes/Utility.h includes/User.h includes/Channel.h includes/Command.h)
+add_executable(42ft_irc main.cpp includes/Server.h includes/Utility.h includes/User.h includes/Channel.h)

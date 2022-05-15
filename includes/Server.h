@@ -3,10 +3,79 @@
 #include "Utility.h"
 #include "User.h"
 #include "Channel.h"
-#include "Command.h"
+#include "Middleware.h"
 
 class Server
 {
+public:
+	class Command
+	{
+	private:
+		Server &_server;
+		User &_user;
+		std::string _content;
+	public:
+		Command(Server &server, User &user, const std::string &content) : _server(server), _user(user), _content(content) {}
+
+		void identify()
+		{
+			char input_fs[1000];
+			char input_sc[1000];
+			char input_th[1000];
+			char input_fh[1000];
+
+			if (std::sscanf(_content.c_str(), "PASS :%s", input_fs) == 1)
+				commandPass(input_fs);
+			else if (std::sscanf(_content.c_str(), "NICK %s", input_fs) == 1)
+				commandNick(input_fs);
+			else if (std::sscanf(_content.c_str(), "USER %s %s %s :%s", input_fs, input_sc, input_th, input_fh) == 4)
+				commandUser(input_fs, input_sc, input_th, input_fh);
+		}
+	private:
+		void commandPass(const std::string& password)
+		{
+			std::cout << "Command pass" << std::endl;
+			if (_server.getPassword() != password)
+				ftMessage(_user, ERR_PASSINCORRECT);
+			else
+				_user.setServerPassword(password);
+		}
+
+		void commandNick(const std::string& nickname)
+		{
+			std::cout << "Command nick" << std::endl;
+			if (!Middleware(_user).nickAccess())
+				ftMessage(_user, ERR_NOACCESS);
+			else
+			{
+				if (!_server.findByNickname(nickname)) {
+					_user.setNickname(nickname);
+					ftMessage(_user, "There are " + to_string(_server._users.size()) + " users and 0 services on 1 server", RPL_LUSERCLIENT);
+					ftMessage(_user,SUCCESS_REGISTER);
+				}
+				else
+					ftMessage(_user, ERR_NICKCOLLISION);
+			}
+		}
+
+		void commandUser(const std::string& username, const std::string& hostname, const std::string& servername, const std::string& realname)
+		{
+			std::cout << "Command user" << std::endl;
+			(void)hostname;
+			(void)servername;
+			(void)realname;
+			if (!Middleware(_user).registerAccess()) {
+				ftMessage(_user, ERR_NOACCESS);
+			} else {
+				if (!_server.findByUsername(username)) {
+					_user.setUsername(username);
+					_user.setRegistered(true);
+				} else {
+					ftMessage(_user, ERR_ALREADYREGISTRED);
+				}
+			}
+		}
+	};
 private:
 	int						_port;
 	std::string				_password;
@@ -32,7 +101,7 @@ public:
 		int optval = 1;
 		_sockaddr.sin_family = AF_INET;
 		_sockaddr.sin_port = htons(_port);
-		_sockaddr.sin_addr.s_addr = 0UL; //inet_addr("127.0.0.1");//0UL; // здесь должен быть IP из конфига
+		_sockaddr.sin_addr.s_addr = 0UL;
 		if ((setsockopt(_listening, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int))) == -1) {
 			close(_listening);
 			ftExit(ERROR_SOCKET_SET);
@@ -90,11 +159,12 @@ public:
 					{
 						try
 						{
-							std::vector<std::string> messages = _users[idx]->getMessage();
-							if (!messages.empty())
+							std::vector<std::string> &messages = _users[idx]->getMessage();
+							while (!messages.empty())
 							{
-								Command command(*_users[idx], _password, messages.back());
+								Command command(*this,*_users[idx], messages.front());
 								command.identify();
+								messages.erase(messages.begin());
 							}
 						}
 						catch (const std::exception & ex)
@@ -137,5 +207,31 @@ public:
 	const std::string &getPassword() const
 	{
 		return _password;
+	}
+
+	const std::vector<User*> &getUsers() const
+	{
+		return _users;
+	}
+
+	void setUsers(const std::vector<User*> &users)
+	{
+		_users = users;
+	}
+
+	User *findByNickname(const std::string &nickname)
+	{
+		for (std::vector<User*>::iterator iterator = _users.begin(); iterator != _users.end(); iterator++)
+			if ((*iterator)->getNickname() == nickname)
+				return *iterator;
+		return 0;
+	}
+
+	User *findByUsername(const std::string &username)
+	{
+		for (std::vector<User*>::iterator iterator = _users.begin(); iterator != _users.end(); iterator++)
+			if ((*iterator)->getUsername() == username)
+				return *iterator;
+		return 0;
 	}
 };

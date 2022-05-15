@@ -7,12 +7,18 @@
 #define ERROR_IP_BIND "Unable to bind IP or specified port!"
 #define ERROR_SOCKET_LISTEN "Unable to start listening on socket!"
 
-#define ERR_PASSINCORRECT ":Password incorrect\r\n"
-#define ERR_NEEDMOREPARAMS ":Need more parameters\r\n"
-#define ERR_ALREADYREGISTRED ":Already registered\r\n"
-#define ERR_NONICKNAMEGIVEN ":No nickname given\r\n"
-#define ERR_NICKCOLLISION ":Nickname is already in use\r\n"
+#define ERR_PASSINCORRECT "Password incorrect"
+#define ERR_NEEDMOREPARAMS "Need more parameters"
+#define ERR_ALREADYREGISTRED "Already registered"
+#define ERR_NONICKNAMEGIVEN "No nickname given"
+#define ERR_NICKCOLLISION "Nickname is already in use"
+#define ERR_NOACCESS "You have no rights"
 
+#define SUCCESS_REGISTER "Hi, welcome to 42ft_irc server!"
+
+#define RPL_LUSERCLIENT 251
+
+#include <sstream>
 #include <cstdlib>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -29,6 +35,9 @@
 #include <arpa/inet.h>
 #include <sys/poll.h>
 #include <vector>
+#include "User.h"
+
+#define to_string(x) dynamic_cast< std::ostringstream& >((std::ostringstream() << std::dec << x)).str()
 
 void ftExit(const std::string &error)
 {
@@ -36,7 +45,11 @@ void ftExit(const std::string &error)
 	exit(1);
 }
 
-void ftError(int _socket, const std::string &error)
+void ftMessage(const User &user, const std::string &message, std::size_t code = 0)
 {
-	send(_socket, error.c_str(), error.size(), MSG_NOSIGNAL);
+	std::string username = user.getUsername();
+	if (username.empty())
+		username = "<unnamed>";
+	std::string msg = std::string(":42ft_irc " + to_string(code) + " " + username + " :" + message + "\r\n");
+	send(user.getSocket(), msg.c_str(), msg.size(), MSG_NOSIGNAL);
 }
