@@ -1,8 +1,8 @@
-#ifndef INC_42FT_IRC_COMMAND_H
-#define INC_42FT_IRC_COMMAND_H
+#pragma once
 
 #include "Utility.h"
 #include "User.h"
+#include "Server.h"
 
 class Command
 {
@@ -37,5 +37,3 @@ private:
 			ftError(_user.getSocket(), ERR_PASSINCORRECT);
 	}
 };
-
-#endif

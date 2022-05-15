@@ -1,5 +1,4 @@
-#ifndef INC_42FT_IRC_SERVER_H
-#define INC_42FT_IRC_SERVER_H
+#pragma once
 
 #include "Utility.h"
 #include "User.h"
@@ -140,5 +139,3 @@ public:
 		return _password;
 	}
 };
-
-#endif

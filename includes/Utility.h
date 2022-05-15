@@ -1,5 +1,4 @@
-#ifndef INC_42FT_IRC_UTILITY_H
-#define INC_42FT_IRC_UTILITY_H
+#pragma once
 
 #define ERROR_USAGE "usage: ./ircserv <port> <password>"
 #define ERROR_SOCKET "Unable to create socket!"
