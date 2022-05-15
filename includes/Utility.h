@@ -17,6 +17,9 @@
 #define SUCCESS_REGISTER "Hi, welcome to 42ft_irc server!"
 
 #define RPL_LUSERCLIENT 251
+#define RPL_NOTOPIC 331
+#define RPL_NAMREPLY 353
+#define RPL_ENDOFNAMES 366
 
 #include <sstream>
 #include <cstdlib>
@@ -45,6 +48,18 @@ void ftExit(const std::string &error)
 	exit(1);
 }
 
+void ftMessageJoin(const User &user, const std::string &message, std::size_t code = 0, const std::string& channelName = "", bool isMid = false)
+{
+	std::string username = user.getUsername();
+	if (username.empty())
+		username = "<unnamed>";
+	if (isMid)
+		username = username + " =";
+	std::string msg = std::string(":42ft_irc " + to_string(code) + " " + username + " " + channelName + " :" + message + "\r\n");
+	send(user.getSocket(), msg.c_str(), msg.size(), MSG_NOSIGNAL);
+	std::cout << "OUT <- " << msg;
+}
+
 void ftMessage(const User &user, const std::string &message, std::size_t code = 0)
 {
 	std::string username = user.getUsername();
@@ -52,4 +67,24 @@ void ftMessage(const User &user, const std::string &message, std::size_t code = 
 		username = "<unnamed>";
 	std::string msg = std::string(":42ft_irc " + to_string(code) + " " + username + " :" + message + "\r\n");
 	send(user.getSocket(), msg.c_str(), msg.size(), MSG_NOSIGNAL);
+	std::cout << "OUT <- " << msg;
+}
+
+void ftSimpleMessage(const User &user, const std::string &message)
+{
+	std::string msg = std::string(message + "\r\n");
+	send(user.getSocket(), msg.c_str(), msg.size(), MSG_NOSIGNAL);
+	std::cout << "OUT <- " << msg;
+}
+
+std::string toString(std::vector<User*> &vector)
+{
+	std::string result;
+	std::vector<User*>::iterator it = vector.begin();
+	for (; it != vector.end() - 1; it++)
+	{
+		result += (*it)->getUsername() + " ";
+	}
+	result += (*it)->getUsername();
+	return result;
 }

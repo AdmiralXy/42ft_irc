@@ -17,6 +17,11 @@ public:
 	{
 		return user.isRegistered();
 	}
+
+	bool joinAccess()
+	{
+		return !user.getServerPassword().empty() && isRegistered();
+	}
 private:
 	bool hasUsername()
 	{

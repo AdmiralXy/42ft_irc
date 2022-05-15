@@ -6,11 +6,14 @@ class Channel
 {
 private:
 	std::string										_name;
+	std::string 									_topic;
 	std::size_t										_countUsers;
 	std::string										_password;
-	std::vector<std::pair <std::string, int> >		_users;
+	std::vector<User*>								_users;
 	bool											_hasPassword;
 public:
+	explicit Channel(const std::string &name) : _name(name), _countUsers(1), _hasPassword(false) {}
+
 	const std::string &getName() const
 	{
 		return _name;
@@ -19,6 +22,16 @@ public:
 	void setName(const std::string &name)
 	{
 		_name = name;
+	}
+
+	const std::string &getTopic() const
+	{
+		return _topic;
+	}
+
+	void setTopic(const std::string &topic)
+	{
+		_topic = topic;
 	}
 
 	size_t getCountUsers() const
@@ -41,12 +54,17 @@ public:
 		_password = password;
 	}
 
-	const std::vector<std::pair<std::string, int> > &getUsers() const
+	void addUser(User *user)
+	{
+		_users.push_back(user);
+	}
+
+	std::vector<User*> &getUsers()
 	{
 		return _users;
 	}
 
-	void setUsers(const std::vector<std::pair<std::string, int> > &users)
+	void setUsers(const std::vector<User*> &users)
 	{
 		_users = users;
 	}

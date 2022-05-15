@@ -41,39 +41,6 @@ public:
 			if (bytesRecv <= 0)
 				return (-1);
 		}
-		std::cout << "DEBUG: " << std::endl;
-		for (const char* p = msg.c_str(); *p != '\0'; ++p)
-		{
-			int c = (unsigned char) *p;
-
-			switch (c)
-			{
-				case '\\':
-					printf("\\\\");
-					break;
-				case '\n':
-					printf("\\n");
-					break;
-				case '\r':
-					printf("\\r");
-					break;
-				case '\t':
-					printf("\\t");
-					break;
-
-				default:
-					if (isprint(c))
-					{
-						putchar(c);
-					}
-					else
-					{
-						printf("\\x%X", c);
-					}
-					break;
-			}
-		}
-		std::cout << std::endl << "!DEBUG: " << std::endl << std::endl << std::endl << std::endl;
 		std::vector<std::string> vector = split(msg, "\r\n");
 		_message.insert(_message.begin(), vector.begin(), vector.end());
 		return (0);

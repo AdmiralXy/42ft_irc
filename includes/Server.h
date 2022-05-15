@@ -30,11 +30,12 @@ public:
 				commandNick(input_fs);
 			else if (std::sscanf(_content.c_str(), "USER %s %s %s :%s", input_fs, input_sc, input_th, input_fh) == 4)
 				commandUser(input_fs, input_sc, input_th, input_fh);
+			else if (std::sscanf(_content.c_str(), "JOIN %s", input_fs) == 1)
+				commandJoin(input_fs);
 		}
 	private:
 		void commandPass(const std::string& password)
 		{
-			std::cout << "Command pass" << std::endl;
 			if (_server.getPassword() != password)
 				ftMessage(_user, ERR_PASSINCORRECT);
 			else
@@ -43,7 +44,6 @@ public:
 
 		void commandNick(const std::string& nickname)
 		{
-			std::cout << "Command nick" << std::endl;
 			if (!Middleware(_user).nickAccess())
 				ftMessage(_user, ERR_NOACCESS);
 			else
@@ -60,7 +60,6 @@ public:
 
 		void commandUser(const std::string& username, const std::string& hostname, const std::string& servername, const std::string& realname)
 		{
-			std::cout << "Command user" << std::endl;
 			(void)hostname;
 			(void)servername;
 			(void)realname;
@@ -75,6 +74,29 @@ public:
 				}
 			}
 		}
+
+		void commandJoin(const std::string& name)
+		{
+			if (!Middleware(_user).joinAccess()) {
+				ftMessage(_user, ERR_NOACCESS);
+			} else {
+				Channel *channel = _server.findChannelByName(name);
+				if (!channel) {
+					Channel new_channel(name);
+					channel = &new_channel;
+					channel->addUser(&_user);
+					_server._channels.push_back(*channel);
+				}
+				//:Username!Username@127.0.0.1 JOIN #123
+				ftSimpleMessage(_user, ":" + _user.getUsername() + "!" + _user.getUsername() + "@127.0.0.1 JOIN " + name);
+				ftMessageJoin(_user, "No topic is set", RPL_NOTOPIC, name);
+				ftMessageJoin(_user, toString(_server._channels.back().getUsers()), RPL_NAMREPLY, name, true);
+				ftMessageJoin(_user, "End of NAMES list", RPL_ENDOFNAMES, name);
+				//:42ft_irc RPL_NOTOPIC Admiral #1234 :No topic is set
+				//:42ft_irc RPL_NAMREPLY Admiral #1234 :Admiral TestUsername Username ...
+				//::42ft_irc RPL_ENDOFNAMES Admiral #1234 :End of NAMES list
+			}
+		}
 	};
 private:
 	int						_port;
@@ -83,8 +105,8 @@ private:
 	sockaddr_in				_sockaddr;
 	int						_clientSocket;
 	std::vector<pollfd>		_fdUsers;
-	std::vector<User *>		_users;
-	std::vector<Channel *>	_channels;
+	std::vector<User*>		_users;
+	std::vector<Channel>	_channels;
 public:
 	Server(int port, const std::string &password) : _port(port), _password(password), _listening(), _sockaddr(), _clientSocket() {}
 
@@ -186,7 +208,7 @@ public:
 		{
 			if (!(*beg)->isActive())
 			{
-				for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+				for (std::vector<Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it)
 				{
 					// Очистка из каналов
 					//(*it)->eraseUserForChannel((*beg)->getNickName(), (*beg)->getSocket());
@@ -232,6 +254,14 @@ public:
 		for (std::vector<User*>::iterator iterator = _users.begin(); iterator != _users.end(); iterator++)
 			if ((*iterator)->getUsername() == username)
 				return *iterator;
+		return 0;
+	}
+
+	Channel *findChannelByName(const std::string &name)
+	{
+		for (std::vector<Channel>::iterator iterator = _channels.begin(); iterator != _channels.end(); iterator++)
+			if ((*iterator).getName() == name)
+				return &(*iterator);
 		return 0;
 	}
 };
