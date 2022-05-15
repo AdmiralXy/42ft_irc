@@ -12,7 +12,7 @@ private:
 	std::vector<std::string>	_message;
 	bool                        _active;
 public:
-	User(int socket, const std::string &host) : _socket(socket), _host(host) {}
+	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true) {}
 	int readMessage()
 	{
 		char buf[4096];

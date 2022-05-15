@@ -10,8 +10,8 @@
 class Server
 {
 private:
-	int				_port;
-	std::string		_password;
+	int						_port;
+	std::string				_password;
 	int						_listening;
 	sockaddr_in				_sockaddr;
 	int						_clientSocket;
@@ -76,7 +76,7 @@ public:
 
 	void receiveMessages()
 	{
-		int ret = poll(_fdUsers.data(), _fdUsers.size(), 5000);
+		int ret = poll(_fdUsers.data(), _fdUsers.size(), 1000);
 		if (ret > 0) {
 			std::vector<pollfd>::iterator it = _fdUsers.begin();
 			std::vector<pollfd>::iterator it2 = _fdUsers.end();
@@ -84,26 +84,29 @@ public:
 				if (it->revents == POLLIN)
 				{
 					int idx = it - _fdUsers.begin();
-					if (_users[idx]->readMessage() == -1) {
-						std::cout << "Inactive: " << _users[idx] << std::endl;
+					if (_users[idx]->readMessage() == -1)
+					{
 						_users[idx]->setActive(false);
 					}
-					try
+					else
 					{
-						std::vector<std::string> messages = _users[idx]->getMessage();
-						if (!messages.empty())
+						try
 						{
-							Command command(messages.back());
-							command.identify();
+							std::vector<std::string> messages = _users[idx]->getMessage();
+							if (!messages.empty())
+							{
+								Command command(messages.back());
+								command.identify();
+							}
+						}
+						catch (const std::exception & ex)
+						{
+							std::cout << "CATCH: " << _users[idx] << std::endl;
+							send(_users[idx]->getSocket(), ex.what(), std::string(ex.what()).size(), MSG_NOSIGNAL);
 						}
 					}
-					catch (const std::exception & ex)
-					{
-						std::cout << "CATCH: " << _users[idx] << std::endl;
-						send(_users[idx]->getSocket(), ex.what(), std::string(ex.what()).size(), MSG_NOSIGNAL);
-					}
 				}
-				it->revents = 0; // обнуляем revents, чтобы можно было пeреиспользовать структуру
+				it->revents = 0; // reset
 			}
 		}
 	}
