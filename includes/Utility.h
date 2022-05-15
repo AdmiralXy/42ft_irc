@@ -40,5 +40,3 @@ void ftError(int _socket, const std::string &error)
 {
 	send(_socket, error.c_str(), error.size(), MSG_NOSIGNAL);
 }
-
-#endif

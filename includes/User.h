@@ -104,5 +104,3 @@ public:
 		_nickname = nickname;
 	}
 };
-
-#endif

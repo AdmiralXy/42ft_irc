@@ -61,5 +61,3 @@ public:
 		_hasPassword = has_password;
 	}
 };
-
-#endif
