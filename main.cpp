@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdlib>
 #include "Server.h"
 
 int main(int argc, char **argv)
@@ -21,5 +20,4 @@ int main(int argc, char **argv)
 		server.receiveMessages();
 		server.clearInactiveUsers();
 	}
-	return 0;
 }

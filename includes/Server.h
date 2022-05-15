@@ -4,7 +4,6 @@
 #include "Utility.h"
 #include "User.h"
 #include "Channel.h"
-#include "Message.h"
 #include "Command.h"
 
 class Server
@@ -19,7 +18,7 @@ private:
 	std::vector<User *>		_users;
 	std::vector<Channel *>	_channels;
 public:
-	Server(int port, const std::string &password) : _port(port), _password(password) {}
+	Server(int port, const std::string &password) : _port(port), _password(password), _listening(), _sockaddr(), _clientSocket() {}
 
 	void createSocket()
 	{
@@ -95,13 +94,12 @@ public:
 							std::vector<std::string> messages = _users[idx]->getMessage();
 							if (!messages.empty())
 							{
-								Command command(messages.back());
+								Command command(*_users[idx], _password, messages.back());
 								command.identify();
 							}
 						}
 						catch (const std::exception & ex)
 						{
-							std::cout << "CATCH: " << _users[idx] << std::endl;
 							send(_users[idx]->getSocket(), ex.what(), std::string(ex.what()).size(), MSG_NOSIGNAL);
 						}
 					}
@@ -113,8 +111,8 @@ public:
 
 	void clearInactiveUsers()
 	{
-		std::vector<User *>::iterator beg = _users.begin();
-		std::vector<User *>::iterator end = _users.end();
+		std::vector<User*>::iterator beg = _users.begin();
+		std::vector<User*>::iterator end = _users.end();
 		while (beg != end)
 		{
 			if (!(*beg)->isActive())
@@ -135,6 +133,11 @@ public:
 			else
 				++beg;
 		}
+	}
+
+	const std::string &getPassword() const
+	{
+		return _password;
 	}
 };
 

@@ -8,9 +8,9 @@ class Channel
 private:
 	std::string										_name;
 	std::size_t										_countUsers;
-	std::string										_pass;
+	std::string										_password;
 	std::vector<std::pair <std::string, int> >		_users;
-	bool											_hasPass;
+	bool											_hasPassword;
 public:
 	const std::string &getName() const
 	{
@@ -32,14 +32,14 @@ public:
 		_countUsers = count_users;
 	}
 
-	const std::string &getPass() const
+	const std::string &getPassword() const
 	{
-		return _pass;
+		return _password;
 	}
 
-	void setPass(const std::string &pass)
+	void setPassword(const std::string &password)
 	{
-		_pass = pass;
+		_password = password;
 	}
 
 	const std::vector<std::pair<std::string, int> > &getUsers() const
@@ -52,14 +52,14 @@ public:
 		_users = users;
 	}
 
-	bool isHasPass() const
+	bool isHasPassword() const
 	{
-		return _hasPass;
+		return _hasPassword;
 	}
 
-	void setHasPass(bool has_pass)
+	void setHasPassword(bool has_password)
 	{
-		_hasPass = has_pass;
+		_hasPassword = has_password;
 	}
 };
 

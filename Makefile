@@ -1,12 +1,11 @@
 CC = c++
 RM = rm -f
 # TODO remove -g flag
-CFLAGS = -Wall -Wextra -Werror -Wpedantic -std=c++98 -Isrc -I. -g
+CFLAGS = -Wall -Wextra -Werror -Wpedantic -std=c++98 -Isrc -Iincludes -g
 
 NAME = ircserv
 
-INCLUDES = Server.h User.h Utility.h Command.h Channel.h
-
+INCLUDES = includes/Server.h includes/User.h includes/Utility.h includes/Command.h includes/Channel.h
 SRCS = main.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 

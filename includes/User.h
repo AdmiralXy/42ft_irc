@@ -2,7 +2,6 @@
 #define INC_42FT_IRC_USER_H
 
 #include "Utility.h"
-#include "Command.h"
 
 class User
 {
@@ -11,8 +10,11 @@ private:
 	std::string					_host;
 	std::vector<std::string>	_message;
 	bool                        _active;
+	std::string					_serverPassword;
+	std::string					_nickname;
 public:
 	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true) {}
+
 	int readMessage()
 	{
 		char buf[4096];
@@ -24,7 +26,7 @@ public:
 			if (bytesRecv > 0) {
 				buf[bytesRecv] = 0;
 				msg += buf;
-				if (msg == "\n" || msg == "")
+				if (msg == "\n" || msg.empty())
 				{
 					msg = "";
 					continue;
@@ -81,6 +83,26 @@ public:
 	void setActive(bool active)
 	{
 		_active = active;
+	}
+
+	const std::string &getServerPassword() const
+	{
+		return _serverPassword;
+	}
+
+	void setServerPassword(const std::string &server_password)
+	{
+		_serverPassword = server_password;
+	}
+
+	const std::string &getNickname() const
+	{
+		return _nickname;
+	}
+
+	void setNickname(const std::string &nickname)
+	{
+		_nickname = nickname;
 	}
 };
 

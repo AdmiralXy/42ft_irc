@@ -3,4 +3,8 @@ project(42ft_irc)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(42ft_irc main.cpp Server.h Utility.h User.h Channel.h Command.h)
+add_compile_options(-Wall -Wextra -pedantic -Werror -Iincludes)
+
+include_directories(includes)
+
+add_executable(42ft_irc main.cpp includes/Server.h includes/Utility.h includes/User.h includes/Channel.h includes/Command.h)
