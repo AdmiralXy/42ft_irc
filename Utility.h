@@ -14,6 +14,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstdio>
 #include <netinet/in.h>
 #include <csignal>
 #include <fcntl.h>

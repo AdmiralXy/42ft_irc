@@ -74,8 +74,9 @@ public:
 		}
 	}
 
-	void receiveMessages() {
-		int ret = poll(_fdUsers.data(), _fdUsers.size(), 1000);
+	void receiveMessages()
+	{
+		int ret = poll(_fdUsers.data(), _fdUsers.size(), 5000);
 		if (ret > 0) {
 			std::vector<pollfd>::iterator it = _fdUsers.begin();
 			std::vector<pollfd>::iterator it2 = _fdUsers.end();
@@ -83,12 +84,53 @@ public:
 				if (it->revents == POLLIN)
 				{
 					int idx = it - _fdUsers.begin();
-					if (_users[idx]->readMessage() == -1)
+					if (_users[idx]->readMessage() == -1) {
+						std::cout << "Inactive: " << _users[idx] << std::endl;
 						_users[idx]->setActive(false);
-					// Все прочитали сообщение, можем работать с ним
+					}
+					try
+					{
+						std::vector<std::string> messages = _users[idx]->getMessage();
+						if (!messages.empty())
+						{
+							Command command(messages.back());
+							command.identify();
+						}
+					}
+					catch (const std::exception & ex)
+					{
+						std::cout << "CATCH: " << _users[idx] << std::endl;
+						send(_users[idx]->getSocket(), ex.what(), std::string(ex.what()).size(), MSG_NOSIGNAL);
+					}
 				}
 				it->revents = 0; // обнуляем revents, чтобы можно было пeреиспользовать структуру
 			}
+		}
+	}
+
+	void clearInactiveUsers()
+	{
+		std::vector<User *>::iterator beg = _users.begin();
+		std::vector<User *>::iterator end = _users.end();
+		while (beg != end)
+		{
+			if (!(*beg)->isActive())
+			{
+				for (std::vector<Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it)
+				{
+					// Очистка из каналов
+					//(*it)->eraseUserForChannel((*beg)->getNickName(), (*beg)->getSocket());
+					//(*it)->eraseUserForInvaiteList((*beg)->getNickName());
+				}
+				close((*beg)->getSocket());
+				delete *beg;
+				_users.erase(beg);
+				int i = beg - _users.begin();
+				_fdUsers.erase(_fdUsers.begin() + i);
+				break;
+			}
+			else
+				++beg;
 		}
 	}
 };

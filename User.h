@@ -2,6 +2,7 @@
 #define INC_42FT_IRC_USER_H
 
 #include "Utility.h"
+#include "Command.h"
 
 class User
 {
@@ -28,7 +29,7 @@ public:
 					msg = "";
 					continue;
 				}
-				std::cout << msg;
+				std::cout << "IN -> " << msg;
 				if (msg.find('\n') != std::string::npos) {
 					if (msg[0] != '\n')
 						msg.erase(msg.find('\n'), 1);
@@ -42,7 +43,27 @@ public:
 		return (0);
 	}
 
-	const std::vector<std::string> &getMessage() const
+	int getSocket() const
+	{
+		return _socket;
+	}
+
+	void setSocket(int socket)
+	{
+		_socket = socket;
+	}
+
+	const std::string &getHost() const
+	{
+		return _host;
+	}
+
+	void setHost(const std::string &host)
+	{
+		_host = host;
+	}
+
+	std::vector<std::string> getMessage() const
 	{
 		return _message;
 	}

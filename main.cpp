@@ -15,11 +15,11 @@ int main(int argc, char **argv)
 	server.createSocket();
 	server.bindSocket();
 	server.listenSocket();
-	while (1)
+	while (true)
 	{
 		server.acceptUsers();
 		server.receiveMessages();
-//		server.deleteNotActiveUsers();
+		server.clearInactiveUsers();
 	}
 	return 0;
 }
