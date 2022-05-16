@@ -4,12 +4,12 @@
 int main(int argc, char **argv)
 {
 	if (argc != 3)
-		ftExit(ERROR_USAGE);
+		ft::exception(ERROR_USAGE);
 
 	int port;
 	std::istringstream(argv[1]) >> port;
 	if (port < 1024 || port > 49151)
-		ftExit(ERROR_PORT);
+		ft::exception(ERROR_PORT);
 	Server server(port, argv[2]);
 	server.createSocket();
 	server.bindSocket();

@@ -1,36 +1,52 @@
 #ifndef INC_42FT_IRC_MIDDLEWARE_H
 #define INC_42FT_IRC_MIDDLEWARE_H
 
+#include "Utility.h"
+#include "Request.h"
+
 class Middleware
 {
 private:
-	User &user;
+	User &_user;
 public:
-	explicit Middleware(User &user) : user(user) {}
+	explicit Middleware(User &user) : _user(user) {}
 
-	bool registerAccess()
+	bool isAuthorized()
 	{
-		return !user.getServerPassword().empty() && !isRegistered();
+		bool condition = !_user.getServerPassword().empty();
+		if (!condition)
+			Request::reply(_user, "462 :Unauthorized command (server protected by password)");
+		return condition;
+	}
+
+	bool registration()
+	{
+		if (!isAuthorized())
+			return false;
+		bool condition = !isRegistered();
+		if (!condition)
+			Request::reply(_user, "462 :Unauthorized command (already registered)");
+		return condition;
 	}
 
 	bool nickAccess()
 	{
-		return user.isRegistered();
+		return _user.isRegistered();
 	}
 
 	bool joinAccess()
 	{
-		return !user.getServerPassword().empty() && isRegistered();
+		return !_user.getServerPassword().empty() && isRegistered();
 	}
 private:
 	bool hasUsername()
 	{
-		return !user.getUsername().empty();
+		return !_user.getUsername().empty();
 	}
 
 	bool isRegistered()
 	{
-		return user.isRegistered();
+		return _user.isRegistered();
 	}
 };
 

@@ -12,10 +12,11 @@ private:
 	std::string					_serverPassword;
 	std::string					_nickname;
 	std::string					_username;
+	std::string 				_realname;
 	bool						_registered;
 
 public:
-	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true) {}
+	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true), _registered(false) {}
 
 	int readMessage()
 	{
@@ -33,8 +34,8 @@ public:
 					msg = "";
 					continue;
 				}
-				std::cout << "IN -> " << msg;
-				if (msg.find("\n") != std::string::npos) {
+				std::cout << "IN ->  " << msg;
+				if (msg.find('\n') != std::string::npos) {
 					break;
 				}
 			}
@@ -116,6 +117,16 @@ public:
 		_username = username;
 	}
 
+	const std::string &getRealname() const
+	{
+		return _realname;
+	}
+
+	void setRealname(const std::string &realname)
+	{
+		_realname = realname;
+	}
+
 	bool isRegistered() const
 	{
 		return _registered;
@@ -125,20 +136,4 @@ public:
 	{
 		_registered = registered;
 	}
-private:
-	static std::vector<std::string> split(const std::string& s, const std::string& delimiter) {
-		size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-		std::string token;
-		std::vector<std::string> res;
-
-		while ((pos_end = s.find (delimiter, pos_start)) != std::string::npos) {
-			token = s.substr (pos_start, pos_end - pos_start);
-			pos_start = pos_end + delim_len;
-			res.push_back (token);
-		}
-
-		res.push_back(s.substr(pos_start));
-		return res;
-	}
-
 };

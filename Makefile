@@ -5,7 +5,16 @@ CFLAGS = -Wall -Wextra -Werror -Wpedantic -std=c++98 -Isrc -Iincludes -g
 
 NAME = ircserv
 
-INCLUDES = includes/Server.h includes/User.h includes/Utility.h includes/Channel.h
+INCLUDES = includes/Channel.h \
+			includes/Command.h \
+			includes/Constants.h \
+			includes/Middleware.h \
+			includes/Request.h \
+			includes/Server.h \
+			includes/User.h \
+			includes/UserRepository.h \
+			includes/Utility.h
+
 SRCS = main.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 
