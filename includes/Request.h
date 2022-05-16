@@ -19,12 +19,12 @@ public:
 		return proceed(user, content);
 	}
 
-	static int reply_format(const User& user, const char *fmt, ...)
+	static int replyf(const User& user, const char *fmt, ...)
 	{
-		va_list arg;
-		va_start(arg, fmt);
-		std::string content = ft::format(fmt, arg);
-		va_end(arg);
+		va_list args;
+		va_start(args, fmt);
+		std::string content = ft::format(fmt, args);
+		va_end(args);
 		return reply(user, content);
 	}
 

@@ -23,30 +23,25 @@ public:
 	{
 		if (!isAuthorized())
 			return false;
-		bool condition = !isRegistered();
+		bool condition = !_user.isRegistered();
 		if (!condition)
 			Request::reply(_user, "462 :Unauthorized command (already registered)");
 		return condition;
 	}
 
-	bool nickAccess()
+	bool nick()
 	{
-		return _user.isRegistered();
+		if (!isAuthorized())
+			return false;
+		bool condition = _user.isRegistered();
+		if (!condition)
+			Request::reply(_user, "462 :Unauthorized command (not registered)");
+		return condition;
 	}
 
 	bool joinAccess()
 	{
-		return !_user.getServerPassword().empty() && isRegistered();
-	}
-private:
-	bool hasUsername()
-	{
-		return !_user.getUsername().empty();
-	}
-
-	bool isRegistered()
-	{
-		return _user.isRegistered();
+		return !_user.getServerPassword().empty() && _user.isRegistered();
 	}
 };
 

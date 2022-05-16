@@ -26,13 +26,13 @@ namespace ft
 {
 	std::string format(const char *fmt, ...)
 	{
-		char *sqlAnswers;
+		char *answer;
 		va_list arg;
 		va_start(arg, fmt);
-		vasprintf(&sqlAnswers, fmt, arg);
+		vasprintf(&answer, fmt, arg);
 		va_end(arg);
-		std::string result(sqlAnswers);
-		free(sqlAnswers);
+		std::string result(answer);
+		free(answer);
 		return result;
 	}
 

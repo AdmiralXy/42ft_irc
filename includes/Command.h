@@ -35,7 +35,6 @@ public:
 		char input_th[10000];
 		char input_fh[10000];
 
-
 		if (std::sscanf(_content.c_str(), "%s", command) == 1)
 		{
 			std::string cmd(command);
@@ -44,8 +43,10 @@ public:
 				handlerPass(input_fs);
 			else if (cmd == "USER" && validate(4, command, "USER %s %s %s :%s", input_fs, input_sc, input_th, input_fh))
 				handlerUser(input_fs, input_sc, input_th, input_fh);
-//		else if (std::sscanf(_content.c_str(), "NICK %s", input_fs) == 1)
-//			commandNick(input_fs);
+			else if (cmd == "NICK" && validate(1, command, "NICK %s", input_fs))
+				commandNick(input_fs);
+	//		else if (std::sscanf(_content.c_str(), "NICK %s", input_fs) == 1)
+	//			commandNick(input_fs);
 			//else if (std::sscanf(_content.c_str(), "JOIN %s", input_fs) == 1)
 			//commandJoin(input_fs);
 		}
@@ -71,22 +72,20 @@ private:
 		}
 	}
 
-//	void commandNick(const std::string& nickname)
-//	{
-//		if (!Middleware(_user).nickAccess())
-//			ftMessage(_user, ERR_NOACCESS);
-//		else
-//		{
-//			if (!_server.findByNickname(nickname)) {
-//				_user.setNickname(nickname);
-//				ftMessage(_user, "There are " + to_string(_server._users.size()) + " users and 0 services on 1 server", RPL_LUSERCLIENT);
-//				ftMessage(_user,SUCCESS_REGISTER);
-//			}
-//			else
-//				ftMessage(_user, ERR_NICKCOLLISION);
-//		}
-//	}
-//
+	void commandNick(const std::string& nickname)
+	{
+		if (Middleware(_user).nick())
+		{
+			if (!findByNickname(_users, nickname)) {
+				_user.setNickname(nickname);
+				Request::reply(_user, ft::format("001 %s :Hi, welcome to %s", _user.getNickname().c_str(), SERVER_NAME));
+				Request::reply(_user, ft::format("251 %s :There are %d users and 0 services on 1 server",  _user.getNickname().c_str(), _users.size()));
+			} else {
+				Request::reply(_user, ft::format("433 * %s :Nickname is already in use", nickname.c_str()));
+			}
+		}
+	}
+
 
 //	void commandJoin(const std::string& name)
 //	{
