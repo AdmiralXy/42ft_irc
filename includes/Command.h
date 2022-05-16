@@ -52,7 +52,7 @@ public:
 				commandPart(input_fs);
 		}
 	}
-private:
+
 	void handlerPass(const std::string& password)
 	{
 		if (_serverPassword != password)

@@ -44,6 +44,11 @@ public:
 		}
 	}
 
+	bool isEmpty()
+	{
+		return _users.empty();
+	}
+
 	const std::string &getName() const
 	{
 		return _name;
