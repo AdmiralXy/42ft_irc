@@ -11,37 +11,49 @@ private:
 public:
 	explicit Middleware(User &user) : _user(user) {}
 
-	bool isAuthorized()
-	{
-		bool condition = !_user.getServerPassword().empty();
-		if (!condition)
-			Request::reply(_user, "462 :Unauthorized command (server protected by password)");
-		return condition;
-	}
-
 	bool registration()
 	{
-		if (!isAuthorized())
-			return false;
-		bool condition = !_user.isRegistered();
-		if (!condition)
-			Request::reply(_user, "462 :Unauthorized command (already registered)");
-		return condition;
+		if (!isRegistered())
+			return true;
+		Request::reply(_user, "462 :Unauthorized command (already registered)");
+		return false;
 	}
 
 	bool nick()
 	{
-		if (!isAuthorized())
+		if (!isAuthorized()) {
+			Request::reply(_user, "462 :Unauthorized command (server protected by password)");
 			return false;
-		bool condition = _user.isRegistered();
-		if (!condition)
+		}
+		if (!isRegistered()) {
 			Request::reply(_user, "462 :Unauthorized command (not registered)");
-		return condition;
+			return false;
+		}
+		return true;
 	}
 
-	bool joinAccess()
+	bool join()
 	{
-		return !_user.getServerPassword().empty() && _user.isRegistered();
+		if (!isAuthorized()) {
+			Request::reply(_user, "462 :Unauthorized command (server protected by password)");
+			return false;
+		}
+		if (!isRegistered()) {
+			Request::reply(_user, "462 :Unauthorized command (not registered)");
+			return false;
+		}
+		return true;
+	}
+
+private:
+	bool isAuthorized()
+	{
+		return !_user.getServerPassword().empty();
+	}
+
+	bool isRegistered()
+	{
+		return _user.isRegistered();
 	}
 };
 

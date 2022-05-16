@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Utility.h"
+#include "UserRepository.h"
+#include "Request.h"
 
 class Channel
 {
@@ -13,6 +15,34 @@ private:
 	bool											_hasPassword;
 public:
 	explicit Channel(const std::string &name) : _name(name), _countUsers(1), _hasPassword(false) {}
+
+	void messageChannel(const std::string& prefix, const std::string& command, const std::string& message)
+	{
+		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
+			Request::reply_raw(*(*it), ft::format(":%s %s %s", prefix.c_str(), command.c_str(), message.c_str()));
+	}
+
+	std::string getNames()
+	{
+		return toString(_users);
+	}
+
+	User *getUserByUsername(const std::string &user)
+	{
+		return findByUsername(_users, user);
+	}
+
+	void removeUser(User &user)
+	{
+		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
+		{
+			if ((*it)->getUsername() == user.getUsername())
+			{
+				_users.erase(it);
+				break;
+			}
+		}
+	}
 
 	const std::string &getName() const
 	{

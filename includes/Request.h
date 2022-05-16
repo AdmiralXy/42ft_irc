@@ -7,28 +7,25 @@
 class Request
 {
 private:
-	static int proceed(const User& user, const std::string& message)
+	static int proceed(User& user, const std::string& message)
 	{
 		std::cout << "OUT <- " << message;
 		return send(user.getSocket(), message.c_str(), message.size(), MSG_NOSIGNAL);
 	}
 public:
-	static int reply(const User& user, const std::string& message)
+	static int reply(User& user, const std::string& message)
 	{
 		std::string content = ft::format(":%s %s\r\n", SERVER_NAME, message.c_str());
 		return proceed(user, content);
 	}
 
-	static int replyf(const User& user, const char *fmt, ...)
+	static int reply_raw(User& user, const std::string& message)
 	{
-		va_list args;
-		va_start(args, fmt);
-		std::string content = ft::format(fmt, args);
-		va_end(args);
-		return reply(user, content);
+		std::string content = ft::format("%s\r\n", message.c_str());
+		return proceed(user, content);
 	}
 
-	static int reply_461(const User& user, const std::string& command)
+	static int reply_461(User& user, const std::string& command)
 	{
 		std::string content = ft::format("461 %s %s :Not enough parameters\r\n", user.getNickname().c_str(), command.c_str());
 		return proceed(user, content);

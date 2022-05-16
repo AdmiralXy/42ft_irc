@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Request.h"
+#include "ChannelRepository.h"
 
 class Command
 {
@@ -45,10 +46,10 @@ public:
 				handlerUser(input_fs, input_sc, input_th, input_fh);
 			else if (cmd == "NICK" && validate(1, command, "NICK %s", input_fs))
 				commandNick(input_fs);
-	//		else if (std::sscanf(_content.c_str(), "NICK %s", input_fs) == 1)
-	//			commandNick(input_fs);
-			//else if (std::sscanf(_content.c_str(), "JOIN %s", input_fs) == 1)
-			//commandJoin(input_fs);
+			else if (cmd == "JOIN" && validate(1, command, "JOIN %s", input_fs))
+				commandJoin(input_fs);
+			else if (cmd == "PART" && validate(1, command, "PART %s", input_fs))
+				commandPart(input_fs);
 		}
 	}
 private:
@@ -64,6 +65,11 @@ private:
 	{
 		(void)hostname;
 		(void)servername;
+		if (findByUsername(_users, username))
+		{
+			Request::reply(_user, "433 :Username is already in use");
+			return;
+		}
 		if (Middleware(_user).registration())
 		{
 			_user.setUsername(username);
@@ -86,27 +92,39 @@ private:
 		}
 	}
 
+	void commandJoin(const std::string& channelName)
+	{
+		if (Middleware(_user).join())
+		{
+			Channel *channel = findByName(_channels, channelName);
+			if (!channel) {
+				channel = new Channel(channelName);
+				_channels.push_back(channel);
+			}
+			if (channel->getUserByUsername(_user.getNickname()))
+				return;
+			channel->addUser(&_user);
+			channel->messageChannel(_user.getPrefix(), "JOIN", channelName);
+			if (!channel->getTopic().empty())
+				Request::reply(_user, ft::format("332 %s %s :%s", _user.getNickname().c_str(), channelName.c_str(), channel->getTopic().c_str()));
+			else
+				Request::reply(_user, ft::format("331 %s %s :No topic is set", _user.getNickname().c_str(), channelName.c_str()));
+			Request::reply_raw(_user, ft::format(":%s 353 %s = %s :%s", SERVER_NAME, _user.getNickname().c_str(), channelName.c_str(), channel->getNames().c_str()));
+			Request::reply(_user, ft::format("366 %s %s :End of NAMES list", _user.getNickname().c_str(), channelName.c_str()));
+		}
+	}
 
-//	void commandJoin(const std::string& name)
-//	{
-//		if (!Middleware(_user).joinAccess()) {
-//			ftMessage(_user, ERR_NOACCESS);
-//		} else {
-//			Channel *channel = _server.findChannelByName(name);
-//			if (!channel) {
-//				Channel new_channel(name);
-//				channel = &new_channel;
-//				channel->addUser(&_user);
-//				_server._channels.push_back(*channel);
-//			}
-//			//:Username!Username@127.0.0.1 JOIN #123
-//			ftSimpleMessage(_user, ":" + _user.getUsername() + "!" + _user.getUsername() + "@127.0.0.1 JOIN " + name);
-//			ftMessageJoin(_user, "No topic is set", RPL_NOTOPIC, name);
-//			ftMessageJoin(_user, toString(_server._channels.back().getUsers()), RPL_NAMREPLY, name, true);
-//			ftMessageJoin(_user, "End of NAMES list", RPL_ENDOFNAMES, name);
-//			//:42ft_irc RPL_NOTOPIC Admiral #1234 :No topic is set
-//			//:42ft_irc RPL_NAMREPLY Admiral #1234 :Admiral TestUsername Username ...
-//			//::42ft_irc RPL_ENDOFNAMES Admiral #1234 :End of NAMES list
-//		}
-//	}
+	void commandPart(const std::string& channelName)
+	{
+		if (Middleware(_user).join())
+		{
+			Channel *channel = findByName(_channels, channelName);
+			if (!channel || !channel->getUserByUsername(_user.getUsername())) {
+				Request::reply(_user, ft::format("442 %s %s :You're not on that channel", _user.getNickname().c_str(), channelName.c_str()));
+				return;
+			}
+			channel->messageChannel(_user.getPrefix(), "PART", ft::format("%s :%s", channelName.c_str(), _user.getUsername().c_str()));
+			channel->removeUser(_user);
+		}
+	}
 };

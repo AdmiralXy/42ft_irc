@@ -42,7 +42,7 @@ public:
 			if (bytesRecv <= 0)
 				return (-1);
 		}
-		std::vector<std::string> vector = split(msg, "\r\n");
+		std::vector<std::string> vector = ft::split(msg, "\r\n");
 		_message.insert(_message.begin(), vector.begin(), vector.end());
 		return (0);
 	}
@@ -135,5 +135,10 @@ public:
 	void setRegistered(bool registered)
 	{
 		_registered = registered;
+	}
+
+	std::string getPrefix()
+	{
+		return _username + "!" + _username	 + "@" + _host;
 	}
 };
