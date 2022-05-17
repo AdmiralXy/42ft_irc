@@ -6,6 +6,7 @@ CFLAGS = -Wall -Wextra -Werror -Wpedantic -std=c++98 -Isrc -Iincludes -g
 NAME = ircserv
 
 INCLUDES = includes/Channel.h \
+			includes/ChannelRepository.h \
 			includes/Command.h \
 			includes/Constants.h \
 			includes/Middleware.h \

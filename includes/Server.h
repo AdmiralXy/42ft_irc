@@ -124,9 +124,9 @@ public:
 				Command command(*(*beg), "", _users, _channels, _password);
 				for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end();)
 				{
-					if ((*it)->getUserByUsername((*beg)->getUsername()))
+					if ((*it)->getUserByNickname((*beg)->getNickname()))
 					{
-						(*it)->messageChannel((*beg)->getPrefix(), "PART", ft::format("%s :%s", (*it)->getName().c_str(), (*beg)->getUsername().c_str()));
+						(*it)->messageChannel((*beg)->getPrefix(), "PART", ft::format("%s :%s", (*it)->getName().c_str(), (*beg)->getNickname().c_str()));
 						(*it)->removeUser(*(*beg));
 					}
 					if ((*it)->isEmpty())

@@ -42,14 +42,18 @@ public:
 
 			if (cmd == "PASS" && validate(1, command, "PASS :%s", input_fs))
 				handlerPass(input_fs);
-			else if (cmd == "USER" && validate(4, command, "USER %s %s %s :%s", input_fs, input_sc, input_th, input_fh))
+			else if (cmd == "USER" && validate(4, command, "USER %s %s %s :%[^\t\n]", input_fs, input_sc, input_th, input_fh))
 				handlerUser(input_fs, input_sc, input_th, input_fh);
 			else if (cmd == "NICK" && validate(1, command, "NICK %s", input_fs))
-				commandNick(input_fs);
+				handlerNick(input_fs);
 			else if (cmd == "JOIN" && validate(1, command, "JOIN %s", input_fs))
-				commandJoin(input_fs);
+				handlerJoin(input_fs);
 			else if (cmd == "PART" && validate(1, command, "PART %s", input_fs))
-				commandPart(input_fs);
+				handlerPart(input_fs);
+			else if (cmd == "PRIVMSG" && validate(2, command, "PRIVMSG %s :%[^\t\n]", input_fs, input_sc))
+				handlerNoticePrivmsg(input_fs, input_sc, "PRIVMSG");
+			else if (cmd == "NOTICE" && validate(2, command, "NOTICE %s :%[^\t\n]", input_fs, input_sc))
+				handlerNoticePrivmsg(input_fs, input_sc, "NOTICE");
 		}
 	}
 
@@ -65,11 +69,6 @@ public:
 	{
 		(void)hostname;
 		(void)servername;
-		if (findByUsername(_users, username))
-		{
-			Request::reply(_user, "433 :Username is already in use");
-			return;
-		}
 		if (Middleware(_user).registration())
 		{
 			_user.setUsername(username);
@@ -78,7 +77,7 @@ public:
 		}
 	}
 
-	void commandNick(const std::string& nickname)
+	void handlerNick(const std::string& nickname)
 	{
 		if (Middleware(_user).nick())
 		{
@@ -92,7 +91,7 @@ public:
 		}
 	}
 
-	void commandJoin(const std::string& channelName)
+	void handlerJoin(const std::string& channelName)
 	{
 		if (Middleware(_user).join())
 		{
@@ -101,7 +100,7 @@ public:
 				channel = new Channel(channelName);
 				_channels.push_back(channel);
 			}
-			if (channel->getUserByUsername(_user.getNickname()))
+			if (channel->getUserByNickname(_user.getNickname()))
 				return;
 			channel->addUser(&_user);
 			channel->messageChannel(_user.getPrefix(), "JOIN", channelName);
@@ -114,17 +113,34 @@ public:
 		}
 	}
 
-	void commandPart(const std::string& channelName)
+	void handlerPart(const std::string& channelName)
 	{
 		if (Middleware(_user).join())
 		{
 			Channel *channel = findByName(_channels, channelName);
-			if (!channel || !channel->getUserByUsername(_user.getUsername())) {
+			if (!channel || !channel->getUserByNickname(_user.getNickname())) {
 				Request::reply(_user, ft::format("442 %s %s :You're not on that channel", _user.getNickname().c_str(), channelName.c_str()));
 				return;
 			}
-			channel->messageChannel(_user.getPrefix(), "PART", ft::format("%s :%s", channelName.c_str(), _user.getUsername().c_str()));
+			channel->messageChannel(_user.getPrefix(), "PART", ft::format("%s :%s left", channelName.c_str(), _user.getNickname().c_str()));
 			channel->removeUser(_user);
+		}
+	}
+
+	void handlerNoticePrivmsg(const std::string& target, const std::string& message, const std::string& command)
+	{
+		if (Middleware(_user).join())
+		{
+			User *user = findByNickname(_users, target);
+			Channel *channel = findByName(_channels, target);
+
+			if (user) {
+				Request::reply_raw(*user, ft::format(":%s %s %s :%s", _user.getPrefix().c_str(), command.c_str(), target.c_str(), message.c_str()));
+			} else if (channel && channel->getUserByNickname(_user.getNickname())) {
+				channel->messageChannelExceptUser(_user.getPrefix(), command, ft::format("%s %s", target.c_str(), message.c_str()), _user);
+			} else {
+				Request::reply(_user, ft::format("401 %s %s :No such nick/channel", _user.getNickname().c_str(), target.c_str()));
+			}
 		}
 	}
 };

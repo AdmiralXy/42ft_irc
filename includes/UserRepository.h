@@ -25,8 +25,8 @@ std::string toString(std::vector<User*> &vector)
 	std::vector<User*>::iterator it = vector.begin();
 	for (; it != vector.end() - 1; it++)
 	{
-		result += (*it)->getUsername() + " ";
+		result += (*it)->getNickname() + " ";
 	}
-	result += (*it)->getUsername();
+	result += (*it)->getNickname();
 	return result;
 }

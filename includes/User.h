@@ -139,6 +139,6 @@ public:
 
 	std::string getPrefix()
 	{
-		return _username + "!" + _username	 + "@" + _host;
+		return _nickname + "!" + _username + "@" + _host;
 	}
 };

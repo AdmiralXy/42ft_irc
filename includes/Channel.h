@@ -16,6 +16,13 @@ private:
 public:
 	explicit Channel(const std::string &name) : _name(name), _countUsers(1), _hasPassword(false) {}
 
+	void messageChannelExceptUser(const std::string& prefix, const std::string& command, const std::string& message, const User& user)
+	{
+		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
+			if ((*it)->getNickname() != user.getNickname())
+				Request::reply_raw(*(*it), ft::format(":%s %s %s", prefix.c_str(), command.c_str(), message.c_str()));
+	}
+
 	void messageChannel(const std::string& prefix, const std::string& command, const std::string& message)
 	{
 		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
@@ -27,16 +34,16 @@ public:
 		return toString(_users);
 	}
 
-	User *getUserByUsername(const std::string &user)
+	User *getUserByNickname(const std::string &user)
 	{
-		return findByUsername(_users, user);
+		return findByNickname(_users, user);
 	}
 
 	void removeUser(User &user)
 	{
 		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
 		{
-			if ((*it)->getUsername() == user.getUsername())
+			if ((*it)->getNickname() == user.getNickname())
 			{
 				_users.erase(it);
 				break;
