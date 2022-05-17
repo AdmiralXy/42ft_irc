@@ -54,7 +54,15 @@ public:
 				handlerNoticePrivmsg(input_fs, input_sc, "PRIVMSG");
 			else if (cmd == "NOTICE" && validate(2, command, "NOTICE %s :%[^\t\n]", input_fs, input_sc))
 				handlerNoticePrivmsg(input_fs, input_sc, "NOTICE");
+			else
+				handlerDefault(command);
 		}
+	}
+
+	void handlerDefault(const std::string& command)
+	{
+		if (Middleware(_user).join())
+			Request::reply(_user, ft::format("461 %s %s :Unknown command", _user.getNickname().c_str(), command.c_str()));
 	}
 
 	void handlerPass(const std::string& password)
@@ -129,6 +137,7 @@ public:
 
 	void handlerNoticePrivmsg(const std::string& target, const std::string& message, const std::string& command)
 	{
+		// TODO difference?
 		if (Middleware(_user).join())
 		{
 			User *user = findByNickname(_users, target);

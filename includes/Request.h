@@ -26,7 +26,7 @@ public:
 
 	static int reply_461(User& user, const std::string& command)
 	{
-		std::string content = ft::format("461 %s %s :Not enough parameters\r\n", user.getNickname().c_str(), command.c_str());
-		return proceed(user, content);
+		std::string content = ft::format("461 %s %s :Not enough parameters", user.getNickname().c_str(), command.c_str());
+		return reply(user, content);
 	}
 };
