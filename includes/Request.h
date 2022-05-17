@@ -1,5 +1,4 @@
-#ifndef INC_42FT_IRC_REQUEST_H
-#define INC_42FT_IRC_REQUEST_H
+#pragma once
 
 #include "UserRepository.h"
 #include "Utility.h"

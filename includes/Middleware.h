@@ -1,5 +1,4 @@
-#ifndef INC_42FT_IRC_MIDDLEWARE_H
-#define INC_42FT_IRC_MIDDLEWARE_H
+#pragma once
 
 #include "Utility.h"
 #include "Request.h"
