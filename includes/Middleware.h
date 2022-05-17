@@ -55,5 +55,3 @@ private:
 		return _user.isRegistered();
 	}
 };
-
-#endif

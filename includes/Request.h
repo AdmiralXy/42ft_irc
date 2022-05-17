@@ -30,5 +30,3 @@ public:
 		return proceed(user, content);
 	}
 };
-
-#endif
