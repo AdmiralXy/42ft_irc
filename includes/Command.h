@@ -145,7 +145,7 @@ public:
 				Request::reply_raw(*user, ft::format(":%s %s %s :%s", _user.getPrefix().c_str(), command.c_str(), target.c_str(), message.c_str()));
 			} else if (channel && channel->getUserByNickname(_user.getNickname())) {
 				channel->messageChannelExceptUser(_user.getPrefix(), command, ft::format("%s %s", target.c_str(), message.c_str()), _user);
-			} else {
+			} else if (command != "NOTICE") {
 				Request::reply(_user, ft::format("401 %s %s :No such nick/channel", _user.getNickname().c_str(), target.c_str()));
 			}
 		}
