@@ -135,7 +135,6 @@ public:
 
 	void handlerNoticePrivmsg(const std::string& target, const std::string& message, const std::string& command)
 	{
-		// TODO difference?
 		if (Middleware(_user).join())
 		{
 			User *user = findByNickname(_users, target);
@@ -150,4 +149,6 @@ public:
 			}
 		}
 	}
+
+
 };

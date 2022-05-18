@@ -9,12 +9,12 @@ class Channel
 private:
 	std::string										_name;
 	std::string 									_topic;
-	std::size_t										_countUsers;
 	std::string										_password;
 	std::vector<User*>								_users;
-	bool											_hasPassword;
+	bool											_isInviteOnly;
+	bool											_isTopicOperator;
 public:
-	explicit Channel(const std::string &name) : _name(name), _countUsers(1), _hasPassword(false) {}
+	explicit Channel(const std::string &name) : _name(name), _isInviteOnly(false), _isTopicOperator(false) {}
 
 	void messageChannelExceptUser(const std::string& prefix, const std::string& command, const std::string& message, const User& user)
 	{
@@ -76,16 +76,6 @@ public:
 		_topic = topic;
 	}
 
-	size_t getCountUsers() const
-	{
-		return _countUsers;
-	}
-
-	void setCountUsers(size_t count_users)
-	{
-		_countUsers = count_users;
-	}
-
 	const std::string &getPassword() const
 	{
 		return _password;
@@ -111,13 +101,23 @@ public:
 		_users = users;
 	}
 
-	bool isHasPassword() const
+	bool isIsInviteOnly() const
 	{
-		return _hasPassword;
+		return _isInviteOnly;
 	}
 
-	void setHasPassword(bool has_password)
+	void setIsInviteOnly(bool is_invite_only)
 	{
-		_hasPassword = has_password;
+		_isInviteOnly = is_invite_only;
+	}
+
+	bool isIsTopicOperator() const
+	{
+		return _isTopicOperator;
+	}
+
+	void setIsTopicOperator(bool is_topic_operator)
+	{
+		_isTopicOperator = is_topic_operator;
 	}
 };

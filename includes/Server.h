@@ -124,15 +124,16 @@ public:
 				Command command(*(*beg), "", _users, _channels, _password);
 				for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end();)
 				{
-					if ((*it)->getUserByNickname((*beg)->getNickname()))
-					{
+					if ((*it)->getUserByNickname((*beg)->getNickname())) {
 						(*it)->messageChannel((*beg)->getPrefix(), "PART", ft::format("%s :%s", (*it)->getName().c_str(), (*beg)->getNickname().c_str()));
 						(*it)->removeUser(*(*beg));
 					}
-					if ((*it)->isEmpty())
+					if ((*it)->isEmpty()) {
 						_channels.erase(it);
-					else
+						delete *it;
+					} else {
 						it++;
+					}
 				}
 				close((*beg)->getSocket());
 				delete *beg;
