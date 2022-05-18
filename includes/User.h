@@ -14,7 +14,6 @@ private:
 	std::string					_username;
 	std::string 				_realname;
 	bool						_registered;
-
 public:
 	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true), _registered(false) {}
 

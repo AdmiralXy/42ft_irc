@@ -6,9 +6,7 @@ IRC server made with RFC 1459 standard and Pidgin chat client as reference.
 
 Internet Chat Relay (IRC) - is designed for group communication in discussion forums, called channels, but also allows one-on-one communication via private messages as well as chat.
 
-It offers real-time messaging that can be either public or private. Users can exchange
-direct messages and join group channels.
-IRC clients connect to IRC servers in order to join channels.
+It offers real-time messaging that can be either public or private.
 
 Build with C++98 standard library.
 
@@ -23,6 +21,8 @@ Build with C++98 standard library.
   * PART \<channel> - leave from chat
   * PRIVMSG \<nickname/channel> :\<text> - send message to user or channel
   * NOTICE \<nickname/channel> :\<text> - send message to user or channel without automatic reply
+  * TOPIC \<channel> [\<topic>] - change the channel topic
+    * The user must be operator if the channel in +t mode
 * Channel operator:
   * KICK \<channel> \<user> - eject a client from the channel
   * MODE \<channel> {[+|-]|i|t} [\<user>] - change the channel's mode
@@ -30,7 +30,6 @@ Build with C++98 standard library.
     * t - topic can be changed only by operator
   * INVITE \<nickname> \<channel> - invite a client to an invite-only channel
   * TOPIC \<channel> [\<topic>] - change the channel topic in a mode +t channel
-    * The user must be operator if the channel in +t mode
 
 ### Requirements & usage
 Project requires:
@@ -47,20 +46,20 @@ $> ./ircserv [port] [password]
 ...
 ```
 
-Usage:
-* Pidgin chat client with GUI (select IRC protocol)
-* With nc :
-  * ```
+Usage with GUI:
+
+You can use **Pidgin** chat client with GUI:
+* Select IRC protocol
+* Enter username, server IP, port and password
+* Press connect
+
+Usage with command line, _netcat_ utility:
+```
     $> nc [IP] [PORT]
-    $> ./ircserv [port] [password]
+    PASS :[pass]
+    USER [username] [hostname] [servername] :[realname]
+    NICK [nickname]
+    JOIN [channel]
+    PRIVMSG [channel] :[message]
     ...
-    ```
-
-### Controls
-
-* W/A/S/D - Move
-* Q/E - Rotate
-* Z/X - Scaling
-* F/G - Shift Heights
-* I/P - Change projection
-* ESC - Exit
+```

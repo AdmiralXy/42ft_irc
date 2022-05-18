@@ -28,8 +28,6 @@ public:
 
 	void execute()
 	{
-		(void)_users;
-		(void)_channels;
 		char command[10000];
 		char input_fs[10000];
 		char input_sc[10000];
