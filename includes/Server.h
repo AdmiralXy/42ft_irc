@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	void receiveMessages()
+	bool receiveMessages()
 	{
 		int ret = poll(_fdUsers.data(), _fdUsers.size(), 1000);
 		if (ret > 0)
@@ -98,7 +98,8 @@ public:
 							while (!messages.empty())
 							{
 								Command command(*_users[idx], messages.front(), _users, _channels, _password);
-								command.execute();
+								if (command.execute())
+									return clearAll();
 								messages.erase(messages.begin());
 							}
 						}
@@ -111,6 +112,7 @@ public:
 				it->revents = 0;
 			}
 		}
+		return false;
 	}
 
 	void clearInactive()
@@ -147,5 +149,16 @@ public:
 				it++;
 			}
 		}
+	}
+
+	bool clearAll()
+	{
+		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
+			delete *it;
+		for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
+			delete *it;
+		_users.clear();
+		_channels.clear();
+		return true;
 	}
 };

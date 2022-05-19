@@ -30,6 +30,9 @@ Build with C++98 standard library.
     * t - topic can be changed only by operator
   * INVITE \<nickname> \<channel> - invite a client to an invite-only channel
   * TOPIC \<channel> [\<topic>] - change the channel topic in a mode +t channel
+* Server operator:
+  * OPER \<user> \<password> - obtain server operator privileges
+  * SQUIT \<server> \<comment> - shutdown server
 
 ### Requirements & usage
 #### Project requires:

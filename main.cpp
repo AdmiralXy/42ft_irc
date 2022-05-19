@@ -13,10 +13,12 @@ int main(int argc, char **argv)
 	server.createSocket();
 	server.bindSocket();
 	server.listenSocket();
-	while (true)
+	bool shutdown = false;
+	while (!shutdown)
 	{
 		server.acceptUsers();
-		server.receiveMessages();
+		shutdown = server.receiveMessages();
 		server.clearInactive();
 	}
+	return 0;
 }

@@ -26,8 +26,10 @@ public:
 		return result;
 	}
 
-	void execute()
+	bool execute()
 	{
+		bool isSquit = false;
+
 		char command[10000];
 		char input_fs[10000];
 		char input_sc[10000];
@@ -56,9 +58,14 @@ public:
 				handlerKick(input_fs, input_sc);
 			else if (cmd == "MODE" && validate(2, command, "MODE %s %s", input_fs, input_sc))
 				handlerMode(input_fs, input_sc);
+			else if (cmd == "OPER" && validate(2, command, "OPER %s %[^\t\n]", input_fs, input_sc))
+				handlerOper(input_fs, input_sc);
+			else if (cmd == "SQUIT" && validate(2, command, "SQUIT %s %[^\t\n]", input_fs, input_sc))
+				isSquit = handlerSquit(input_fs, input_sc);
 			else
 				handlerDefault(command);
 		}
+		return isSquit;
 	}
 
 	void handlerDefault(const std::string& command)
@@ -192,5 +199,35 @@ public:
 				Request::reply(_user, ft::format("472 %s %s :is unknown mode char to me", _user.getNickname().c_str(), mode.c_str()));
 			}
 		}
+	}
+
+	void handlerOper(const std::string& nickname, const std::string& password)
+	{
+		if (Middleware(_user).nick())
+		{
+			User *user = findByNickname(_users, nickname);
+
+			if (!user) {
+				Request::reply(_user, ft::format("401 %s %s :No such nick/channel", _user.getNickname().c_str(), nickname.c_str()));
+			} else if (password != SERVER_OPERATOR_PASSWORD) {
+				_user.setServerOperator(false);
+				Request::reply(_user, "464 :Password incorrect");
+			} else {
+				_user.setServerOperator(true);
+				Request::reply(_user, "381 :You are now an IRC operator");
+			}
+		}
+	}
+
+	bool handlerSquit(const std::string& server, const std::string& comment)
+	{
+		(void)comment;
+		if (!Middleware(_user).serverOperator())
+			return false;
+		if (server != SERVER_NAME) {
+			Request::reply(_user, "402 :No such server");
+			return false;
+		}
+		return true;
 	}
 };

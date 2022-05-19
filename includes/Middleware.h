@@ -44,6 +44,17 @@ public:
 		return true;
 	}
 
+	bool serverOperator()
+	{
+		if (!nick())
+			return false;
+		if (!_user.isServerOperator()) {
+			Request::reply(_user, "481 :Permission Denied - You're not an IRC operator");
+			return false;
+		}
+		return true;
+	}
+
 private:
 	bool isAuthorized()
 	{

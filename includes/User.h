@@ -14,8 +14,9 @@ private:
 	std::string					_username;
 	std::string 				_realname;
 	bool						_registered;
+	bool						_serverOperator;
 public:
-	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true), _registered(false) {}
+	User(int socket, const std::string &host) : _socket(socket), _host(host), _active(true), _registered(false), _serverOperator(false) {}
 
 	int readMessage()
 	{
@@ -139,5 +140,15 @@ public:
 	std::string getPrefix()
 	{
 		return _nickname + "!" + _username + "@" + _host;
+	}
+
+	bool isServerOperator() const
+	{
+		return _serverOperator;
+	}
+
+	void setServerOperator(bool server_operator)
+	{
+		_serverOperator = server_operator;
 	}
 };
