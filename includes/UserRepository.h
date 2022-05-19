@@ -18,15 +18,3 @@ User *findByUsername(std::vector<User*> &users, const std::string &username)
 			return *iterator;
 	return 0;
 }
-
-std::string toString(std::vector<User*> &vector)
-{
-	std::string result;
-	std::vector<User*>::iterator it = vector.begin();
-	for (; it != vector.end() - 1; it++)
-	{
-		result += (*it)->getNickname() + " ";
-	}
-	result += (*it)->getNickname();
-	return result;
-}

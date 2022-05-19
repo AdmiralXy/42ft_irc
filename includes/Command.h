@@ -103,7 +103,7 @@ public:
 		{
 			Channel *channel = findByName(_channels, channelName);
 			if (!channel) {
-				channel = new Channel(channelName);
+				channel = new Channel(channelName, _user.getNickname());
 				_channels.push_back(channel);
 			}
 			if (channel->getUserByNickname(_user.getNickname()))

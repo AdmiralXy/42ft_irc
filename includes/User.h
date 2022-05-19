@@ -24,7 +24,7 @@ public:
 
 		for(;;) {
 			memset(buf, 0, 4096);
-			int bytesRecv = recv(_socket, buf, 4096, 0);
+			int bytesRecv = recv(_socket, buf, 4095, 0);
 			if (bytesRecv > 0) {
 				buf[bytesRecv] = 0;
 				msg += buf;

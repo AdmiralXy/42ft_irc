@@ -11,10 +11,10 @@ private:
 	std::string 									_topic;
 	std::string										_password;
 	std::vector<User*>								_users;
+	std::string										_operator;
 	bool											_isInviteOnly;
-	bool											_isTopicOperator;
 public:
-	explicit Channel(const std::string &name) : _name(name), _isInviteOnly(false), _isTopicOperator(false) {}
+	explicit Channel(const std::string &name, const std::string& user) : _name(name), _operator(user), _isInviteOnly(false) {}
 
 	void messageChannelExceptUser(const std::string& prefix, const std::string& command, const std::string& message, const User& user)
 	{
@@ -31,7 +31,7 @@ public:
 
 	std::string getNames()
 	{
-		return toString(_users);
+		return usersToString();
 	}
 
 	User *getUserByNickname(const std::string &user)
@@ -111,13 +111,24 @@ public:
 		_isInviteOnly = is_invite_only;
 	}
 
-	bool isIsTopicOperator() const
+private:
+	std::string usersToString()
 	{
-		return _isTopicOperator;
-	}
-
-	void setIsTopicOperator(bool is_topic_operator)
-	{
-		_isTopicOperator = is_topic_operator;
+		std::string result;
+		std::vector<User*>::iterator it = _users.begin();
+		for (; it != _users.end() - 1; it++)
+		{
+			std::string nickname = (*it)->getNickname();
+			if (nickname == _operator)
+				result += "@" + nickname + " ";
+			else
+				result += nickname + " ";
+		}
+		std::string nickname = (*it)->getNickname();
+		if (nickname == _operator)
+			result += "@" + nickname + " ";
+		else
+			result += nickname + " ";
+		return result;
 	}
 };
