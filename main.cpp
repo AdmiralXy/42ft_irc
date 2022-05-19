@@ -5,7 +5,6 @@ int main(int argc, char **argv)
 {
 	if (argc != 3)
 		ft::exception(ERROR_USAGE);
-
 	int port;
 	std::istringstream(argv[1]) >> port;
 	if (port < 1024 || port > 49151)
@@ -18,6 +17,6 @@ int main(int argc, char **argv)
 	{
 		server.acceptUsers();
 		server.receiveMessages();
-		server.clearInactiveUsers();
+		server.clearInactive();
 	}
 }

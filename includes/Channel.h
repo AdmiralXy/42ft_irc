@@ -53,6 +53,7 @@ public:
 
 	bool isEmpty()
 	{
+		std::cout << "_users.empty()? " << _users.empty();
 		return _users.empty();
 	}
 

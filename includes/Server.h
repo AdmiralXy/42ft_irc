@@ -113,7 +113,7 @@ public:
 		}
 	}
 
-	void clearInactiveUsers()
+	void clearInactive()
 	{
 		std::vector<User*>::iterator beg = _users.begin();
 		std::vector<User*>::iterator end = _users.end();
@@ -121,18 +121,11 @@ public:
 		{
 			if (!(*beg)->isActive())
 			{
-				Command command(*(*beg), "", _users, _channels, _password);
-				for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end();)
+				for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
 				{
 					if ((*it)->getUserByNickname((*beg)->getNickname())) {
 						(*it)->messageChannel((*beg)->getPrefix(), "PART", ft::format("%s :%s", (*it)->getName().c_str(), (*beg)->getNickname().c_str()));
 						(*it)->removeUser(*(*beg));
-					}
-					if ((*it)->isEmpty()) {
-						_channels.erase(it);
-						delete *it;
-					} else {
-						it++;
 					}
 				}
 				close((*beg)->getSocket());
@@ -144,6 +137,15 @@ public:
 			}
 			else
 				++beg;
+		}
+		for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end();)
+		{
+			if ((*it)->isEmpty()) {
+				_channels.erase(it);
+				delete *it;
+			} else {
+				it++;
+			}
 		}
 	}
 };
