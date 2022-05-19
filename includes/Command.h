@@ -54,6 +54,8 @@ public:
 				handlerNoticePrivmsg(input_fs, input_sc, "NOTICE");
 			else if (cmd == "KICK" && validate(2, command, "KICK %s %[^\t\n]", input_fs, input_sc))
 				handlerKick(input_fs, input_sc);
+			else if (cmd == "MODE" && validate(2, command, "MODE %s %s", input_fs, input_sc))
+				handlerMode(input_fs, input_sc);
 			else
 				handlerDefault(command);
 		}
@@ -166,6 +168,28 @@ public:
 			} else {
 				channel->messageChannel(user->getPrefix(), "PART", ft::format("%s :%s kicked by channel operator", channelName.c_str(), user->getNickname().c_str()));
 				channel->removeUser(*user);
+			}
+		}
+	}
+
+	void handlerMode(const std::string& channelName, const std::string& mode)
+	{
+		if (Middleware(_user).nick())
+		{
+			Channel *channel = findByName(_channels, channelName);
+
+			if (!channel) {
+				Request::reply(_user, ft::format("403 %s %s :No such channel", _user.getNickname().c_str(), channelName.c_str()));
+			} else if (!channel->isOperator(_user)) {
+				Request::reply(_user, ft::format("%s :You're not channel operator", channelName.c_str()));
+			} else if (mode == "+i") {
+				channel->setIsInviteOnly(true);
+				channel->messageChannelRaw(ft::format(":%s 221 %s :+i", SERVER_NAME, channelName.c_str()));
+			} else if (mode == "-i") {
+				channel->setIsInviteOnly(false);
+				channel->messageChannelRaw(ft::format(":%s 221 %s :-i", SERVER_NAME, channelName.c_str()));
+			} else {
+				Request::reply(_user, ft::format("472 %s %s :is unknown mode char to me", _user.getNickname().c_str(), mode.c_str()));
 			}
 		}
 	}

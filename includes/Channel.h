@@ -29,6 +29,12 @@ public:
 			Request::reply_raw(*(*it), ft::format(":%s %s %s", prefix.c_str(), command.c_str(), message.c_str()));
 	}
 
+	void messageChannelRaw(const std::string& message)
+	{
+		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
+			Request::reply_raw(*(*it), message);
+	}
+
 	std::string getNames()
 	{
 		return usersToString();
@@ -53,7 +59,6 @@ public:
 
 	bool isEmpty()
 	{
-		std::cout << "_users.empty()? " << _users.empty();
 		return _users.empty();
 	}
 
