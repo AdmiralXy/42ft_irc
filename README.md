@@ -25,7 +25,7 @@ Build with C++98 standard library.
     * The user must be operator if the channel in +t mode
 * Channel operator:
   * KICK \<channel> \<user> - eject a client from the channel
-  * MODE \<channel> {[+|-]|i|t} [\<user>] - change the channel's mode
+  * MODE \<channel> {[+|-]|i|t} - change the channel's mode
     * i - invite only
     * t - topic can be changed only by operator
   * INVITE \<nickname> \<channel> - invite a client to an invite-only channel
