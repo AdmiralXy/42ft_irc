@@ -32,28 +32,24 @@ Build with C++98 standard library.
   * TOPIC \<channel> [\<topic>] - change the channel topic in a mode +t channel
 
 ### Requirements & usage
-Project requires:
+#### Project requires:
 * C++ compiler: **gcc** or **clang**
 * Possibility to work with Makefile
 
-Tested on:
+#### Tested on:
 * Linux Ubuntu 21.10
 
-Run:
+#### Run:
 ```
 $> make
 $> ./ircserv [port] [password]
 ...
 ```
 
-Usage with GUI:
 
-You can use **Pidgin** chat client with GUI:
-* Select IRC protocol
-* Enter username, server IP, port and password
-* Press connect
+#### Connect:
 
-Usage with command line, _netcat_ utility:
+You can use Pidgin chat client with GUI or command line, _netcat_ utility:
 ```
     $> nc [IP] [PORT]
     PASS :[pass]
