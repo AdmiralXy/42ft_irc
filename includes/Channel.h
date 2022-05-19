@@ -111,6 +111,11 @@ public:
 		_isInviteOnly = is_invite_only;
 	}
 
+	bool isOperator(const User &user) const
+	{
+		return user.getNickname() == _operator;
+	}
+
 private:
 	std::string usersToString()
 	{

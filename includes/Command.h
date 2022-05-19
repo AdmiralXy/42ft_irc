@@ -52,6 +52,8 @@ public:
 				handlerNoticePrivmsg(input_fs, input_sc, "PRIVMSG");
 			else if (cmd == "NOTICE" && validate(2, command, "NOTICE %s :%[^\t\n]", input_fs, input_sc))
 				handlerNoticePrivmsg(input_fs, input_sc, "NOTICE");
+			else if (cmd == "KICK" && validate(2, command, "KICK %s %[^\t\n]", input_fs, input_sc))
+				handlerKick(input_fs, input_sc);
 			else
 				handlerDefault(command);
 		}
@@ -150,5 +152,21 @@ public:
 		}
 	}
 
+	void handlerKick(const std::string& channelName, const std::string& nickname)
+	{
+		if (Middleware(_user).nick())
+		{
+			User *user = findByNickname(_users, nickname);
+			Channel *channel = findByName(_channels, channelName);
 
+			if (!user || !channel) {
+				Request::reply(_user, ft::format("401 %s %s :No such nick/channel", _user.getNickname().c_str(), nickname.c_str()));
+			} else if (!channel->isOperator(_user)) {
+				Request::reply(_user, ft::format("%s :You're not channel operator", channelName.c_str()));
+			} else {
+				channel->messageChannel(user->getPrefix(), "PART", ft::format("%s :%s kicked by channel operator", channelName.c_str(), user->getNickname().c_str()));
+				channel->removeUser(*user);
+			}
+		}
+	}
 };
