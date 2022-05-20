@@ -12,9 +12,10 @@ private:
 	std::string										_password;
 	std::vector<User*>								_users;
 	std::string										_operator;
-	bool											_isInviteOnly;
+	bool											_inviteOnly;
+	std::vector<std::string>						_inviteList;
 public:
-	explicit Channel(const std::string &name, const std::string& user) : _name(name), _operator(user), _isInviteOnly(false) {}
+	explicit Channel(const std::string &name, const std::string& user) : _name(name), _operator(user), _inviteOnly(false) {}
 
 	void messageChannelExceptUser(const std::string& prefix, const std::string& command, const std::string& message, const User& user)
 	{
@@ -107,14 +108,14 @@ public:
 		_users = users;
 	}
 
-	bool isIsInviteOnly() const
+	bool isInviteOnly() const
 	{
-		return _isInviteOnly;
+		return _inviteOnly;
 	}
 
-	void setIsInviteOnly(bool is_invite_only)
+	void setInviteOnly(bool invite_only)
 	{
-		_isInviteOnly = is_invite_only;
+		_inviteOnly = invite_only;
 	}
 
 	bool isOperator(const User &user) const
@@ -122,6 +123,30 @@ public:
 		return user.getNickname() == _operator;
 	}
 
+	void addToInviteList(const User &user)
+	{
+		_inviteList.push_back(user.getNickname());
+	}
+
+	bool isInInviteList(const User &user)
+	{
+		for (std::vector<std::string>::iterator it = _inviteList.begin(); it != _inviteList.end(); it++)
+			if ((*it) == user.getNickname())
+				return true;
+		return false;
+	}
+
+	void removeFromInviteList(const User &user)
+	{
+		for (std::vector<std::string>::iterator it = _inviteList.begin(); it != _inviteList.end(); it++)
+		{
+			if ((*it) == user.getNickname())
+			{
+				_inviteList.erase(it);
+				return;
+			}
+		}
+	}
 private:
 	std::string usersToString()
 	{

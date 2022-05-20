@@ -62,6 +62,8 @@ public:
 				handlerOper(input_fs, input_sc);
 			else if (cmd == "SQUIT" && validate(2, command, "SQUIT %s %[^\t\n]", input_fs, input_sc))
 				isSquit = handlerSquit(input_fs, input_sc);
+			else if (cmd == "INVITE" && validate(2, command, "INVITE %s %s", input_fs, input_sc))
+				handlerInvite(input_fs, input_sc);
 			else
 				handlerDefault(command);
 		}
@@ -117,7 +119,7 @@ public:
 				channel = new Channel(channelName, _user.getNickname());
 				_channels.push_back(channel);
 			}
-			if (channel->getUserByNickname(_user.getNickname()))
+			if (channel->getUserByNickname(_user.getNickname()) || (channel->isInviteOnly() && !channel->isInInviteList(_user)))
 				return;
 			channel->addUser(&_user);
 			channel->messageChannel(_user.getPrefix(), "JOIN", channelName);
@@ -175,6 +177,7 @@ public:
 			} else {
 				channel->messageChannel(user->getPrefix(), "PART", ft::format("%s :%s kicked by channel operator", channelName.c_str(), user->getNickname().c_str()));
 				channel->removeUser(*user);
+				channel->removeFromInviteList(*user);
 			}
 		}
 	}
@@ -190,10 +193,10 @@ public:
 			} else if (!channel->isOperator(_user)) {
 				Request::reply(_user, ft::format("%s :You're not channel operator", channelName.c_str()));
 			} else if (mode == "+i") {
-				channel->setIsInviteOnly(true);
+				channel->setInviteOnly(true);
 				channel->messageChannelRaw(ft::format(":%s 221 %s :+i", SERVER_NAME, channelName.c_str()));
 			} else if (mode == "-i") {
-				channel->setIsInviteOnly(false);
+				channel->setInviteOnly(false);
 				channel->messageChannelRaw(ft::format(":%s 221 %s :-i", SERVER_NAME, channelName.c_str()));
 			} else {
 				Request::reply(_user, ft::format("472 %s %s :is unknown mode char to me", _user.getNickname().c_str(), mode.c_str()));
@@ -229,5 +232,21 @@ public:
 			return false;
 		}
 		return true;
+	}
+
+	void handlerInvite(const std::string& nickname, const std::string& channelName)
+	{
+		// TODO mb reply to invited user?
+		User *user = findByNickname(_users, nickname);
+		Channel *channel = findByName(_channels, channelName);
+
+		if (!user || !channel) {
+			Request::reply(_user, ft::format("401 %s %s :No such nick/channel", _user.getNickname().c_str(), nickname.c_str()));
+		} else if (channel->isInviteOnly() && !channel->isOperator(_user)) {
+			Request::reply(_user, ft::format("%s :You're not channel operator", channelName.c_str()));
+		} else {
+			channel->addToInviteList(*user);
+			Request::reply(_user, ft::format("%s %s", channelName.c_str(), _user.getNickname().c_str()));
+		}
 	}
 };
