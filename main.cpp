@@ -3,9 +3,10 @@
 
 int main(int argc, char **argv)
 {
+	int port;
+	bool shutdown = false;
 	if (argc != 3)
 		ft::exception(ERROR_USAGE);
-	int port;
 	std::istringstream(argv[1]) >> port;
 	if (port < 1024 || port > 49151)
 		ft::exception(ERROR_PORT);
@@ -13,7 +14,6 @@ int main(int argc, char **argv)
 	server.createSocket();
 	server.bindSocket();
 	server.listenSocket();
-	bool shutdown = false;
 	while (!shutdown)
 	{
 		server.acceptUsers();
