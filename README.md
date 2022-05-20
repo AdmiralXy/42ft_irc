@@ -21,13 +21,10 @@ Build with C++98 standard library.
   * PART \<channel> - leave from chat
   * PRIVMSG \<nickname/channel> :\<text> - send message to user or channel
   * NOTICE \<nickname/channel> :\<text> - send message to user or channel without automatic reply
-  * TOPIC \<channel> [\<topic>] - change the channel topic
-    * The user must be operator if the channel in +t mode
 * Channel operator:
   * KICK \<channel> \<user> - eject a client from the channel
-  * MODE \<channel> {[+|-]|i|t} - change the channel's mode
+  * MODE \<channel> {[+|-]|i} - change the channel's mode
     * i - invite only
-    * t - topic can be changed only by operator
   * INVITE \<nickname> \<channel> - invite a client to an invite-only channel
   * TOPIC \<channel> [\<topic>] - change the channel topic in a mode +t channel
 * Server operator:

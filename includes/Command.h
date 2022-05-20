@@ -64,6 +64,8 @@ public:
 				isSquit = handlerSquit(input_fs, input_sc);
 			else if (cmd == "INVITE" && validate(2, command, "INVITE %s %s", input_fs, input_sc))
 				handlerInvite(input_fs, input_sc);
+			else if (cmd == "TOPIC" && validate(2, command, "TOPIC %s :%[^\t\n]", input_fs, input_sc))
+				handlerTopic(input_fs, input_sc);
 			else
 				handlerDefault(command);
 		}
@@ -247,6 +249,23 @@ public:
 		} else {
 			channel->addToInviteList(*user);
 			Request::reply(_user, ft::format("%s %s", channelName.c_str(), _user.getNickname().c_str()));
+		}
+	}
+
+	void handlerTopic(const std::string& channelName, const std::string& topic)
+	{
+		if (Middleware(_user).nick())
+		{
+			Channel *channel = findByName(_channels, channelName);
+
+			if (!channel) {
+				Request::reply(_user, ft::format("403 %s %s :No such channel", _user.getNickname().c_str(), channelName.c_str()));
+			} else if (!channel->isOperator(_user)) {
+				Request::reply(_user, ft::format("%s :You're not channel operator", channelName.c_str()));
+			} else {
+				channel->messageChannel(_user.getPrefix(), "TOPIC", ft::format("%s :%s", channelName.c_str(), topic.c_str()));
+				channel->setTopic(topic);
+			}
 		}
 	}
 };
