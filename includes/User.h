@@ -52,21 +52,6 @@ public:
 		return _socket;
 	}
 
-	void setSocket(int socket)
-	{
-		_socket = socket;
-	}
-
-	const std::string &getHost() const
-	{
-		return _host;
-	}
-
-	void setHost(const std::string &host)
-	{
-		_host = host;
-	}
-
 	std::vector<std::string> &getMessage()
 	{
 		return _message;

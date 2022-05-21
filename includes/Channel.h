@@ -68,11 +68,6 @@ public:
 		return _name;
 	}
 
-	void setName(const std::string &name)
-	{
-		_name = name;
-	}
-
 	const std::string &getTopic() const
 	{
 		return _topic;
@@ -83,29 +78,9 @@ public:
 		_topic = topic;
 	}
 
-	const std::string &getPassword() const
-	{
-		return _password;
-	}
-
-	void setPassword(const std::string &password)
-	{
-		_password = password;
-	}
-
 	void addUser(User *user)
 	{
 		_users.push_back(user);
-	}
-
-	std::vector<User*> &getUsers()
-	{
-		return _users;
-	}
-
-	void setUsers(const std::vector<User*> &users)
-	{
-		_users = users;
 	}
 
 	bool isInviteOnly() const
