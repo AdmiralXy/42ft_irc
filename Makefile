@@ -16,7 +16,7 @@ INCLUDES = includes/Channel.h \
 			includes/UserRepository.h \
 			includes/Utility.h
 
-SRCS = main.cpp
+SRCS = srcs/main.cpp
 OBJS = $(SRCS:%.cpp=%.o)
 
 %.o: %.cpp $(INCLUDES)
