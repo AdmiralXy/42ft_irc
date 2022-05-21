@@ -17,10 +17,9 @@
 #include <arpa/inet.h>
 #include <sys/poll.h>
 #include <vector>
+#include <ctime>
 
 #include "Constants.h"
-
-#define to_string(x) dynamic_cast< std::ostringstream& >((std::ostringstream() << std::dec << x)).str()
 
 namespace ft
 {
@@ -54,5 +53,23 @@ namespace ft
 		}
 		res.push_back(s.substr(pos_start));
 		return res;
+	}
+
+	std::string currentDateTime()
+	{
+		time_t		now = time(0);
+		struct tm	tstruct;
+		char		buf[80];
+		tstruct = *localtime(&now);
+		strftime(buf, sizeof(buf), "It's %d-%m-%Y %X now.", &tstruct);
+		return buf;
+	}
+
+	template<typename T>
+	std::string toString(const T& value)
+	{
+		std::ostringstream oss;
+		oss << value;
+		return oss.str();
 	}
 }

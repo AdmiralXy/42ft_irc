@@ -161,4 +161,22 @@ public:
 		_channels.clear();
 		return true;
 	}
+
+	void addBot()
+	{
+		std::cout << "IRC BOT connected..." << std::endl;
+		User *user = new User(-1, SERVER_NAME);
+		user->setServerOperator(true);
+		user->setServerPassword(_password);
+		user->setRegistered(true);
+		user->setNickname(SERVER_IRC_BOT_NICKNAME);
+		user->setUsername(SERVER_IRC_BOT_NICKNAME);
+		user->setRealname(SERVER_IRC_BOT_NICKNAME);
+		pollfd pfd;
+		pfd.fd = -1;
+		pfd.events = POLLIN;
+		pfd.revents = POLLERR;
+		_fdUsers.push_back(pfd);
+		_users.push_back(user);
+	}
 };

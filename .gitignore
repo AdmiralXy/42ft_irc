@@ -1,3 +1,4 @@
 ircserv
 *.o
 cmake-build-debug
+*.o.tmp

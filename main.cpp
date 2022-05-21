@@ -14,6 +14,7 @@ int main(int argc, char **argv)
 	server.createSocket();
 	server.bindSocket();
 	server.listenSocket();
+	server.addBot();
 	while (!shutdown)
 	{
 		server.acceptUsers();

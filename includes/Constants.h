@@ -2,6 +2,7 @@
 
 #define SERVER_NAME "42ft_irc"
 #define SERVER_OPERATOR_PASSWORD "secret"
+#define SERVER_IRC_BOT_NICKNAME "Nightbot"
 
 #define ERROR_USAGE "usage: ./ircserv <port> <password>"
 #define ERROR_SOCKET "Unable to create socket!"

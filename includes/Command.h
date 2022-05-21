@@ -159,6 +159,7 @@ public:
 				Request::reply_raw(*user, ft::format(":%s %s %s :%s", _user.getPrefix().c_str(), command.c_str(), target.c_str(), message.c_str()));
 			} else if (channel && channel->getUserByNickname(_user.getNickname())) {
 				channel->messageChannelExceptUser(_user.getPrefix(), command, ft::format("%s %s", target.c_str(), message.c_str()), _user);
+				botProcess(channel, _user, message, target, command);
 			} else if (command != "NOTICE") {
 				Request::reply(_user, ft::format("401 %s %s :No such nick/channel", _user.getNickname().c_str(), target.c_str()));
 			}
@@ -249,6 +250,10 @@ public:
 		} else {
 			channel->addToInviteList(*user);
 			Request::reply(_user, ft::format("%s %s", channelName.c_str(), _user.getNickname().c_str()));
+			if (user->getNickname() == SERVER_IRC_BOT_NICKNAME) {
+				channel->addUser(user);
+				channel->messageChannel(user->getPrefix(), "JOIN", channelName);
+			}
 		}
 	}
 
@@ -265,6 +270,29 @@ public:
 			} else {
 				channel->messageChannel(_user.getPrefix(), "TOPIC", ft::format("%s :%s", channelName.c_str(), topic.c_str()));
 				channel->setTopic(topic);
+			}
+		}
+	}
+private:
+	inline void botProcess(Channel *channel, const User& from, const std::string& message, const std::string& target, const std::string& command)
+	{
+		User *bot = channel->getUserByNickname(SERVER_IRC_BOT_NICKNAME);
+		if (bot)
+		{
+			if (message == "Bot, what time is it?") {
+				channel->messageChannelExceptUser(bot->getPrefix(), command, ft::format("%s %s", target.c_str(), ft::currentDateTime().c_str()), *bot);
+			} else if (message == "Bot, roll") {
+				int rand = std::rand() % 101;
+				std::string result = from.getNickname() + ", you get " + ft::toString(rand) + "/100.";
+				channel->messageChannelExceptUser(bot->getPrefix(), command, ft::format("%s %s", target.c_str(), result.c_str()), *bot);
+			} else if (message.rfind("Bot, ", 0) != std::string::npos && message.find('?') != std::string::npos) {
+				int rand = std::rand() % 3;
+				if (rand == 0)
+					channel->messageChannelExceptUser(bot->getPrefix(), command, ft::format("%s %s", target.c_str(), "Yes."), *bot);
+				else if (rand == 1)
+					channel->messageChannelExceptUser(bot->getPrefix(), command, ft::format("%s %s", target.c_str(), "No."), *bot);
+				else if (rand == 2)
+					channel->messageChannelExceptUser(bot->getPrefix(), command, ft::format("%s %s", target.c_str(), "I don't know."), *bot);
 			}
 		}
 	}
