@@ -2,3 +2,6 @@ ircserv
 *.o
 cmake-build-debug
 *.o.tmp
+cmake-build-debug
+CMakeLists.txt
+.idea
