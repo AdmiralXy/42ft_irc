@@ -1,7 +1,6 @@
 CC = c++
 RM = rm -f
-# TODO remove -g flag
-CFLAGS = -Wall -Wextra -Werror -Wpedantic -std=c++98 -Isrc -Iincludes -g
+CFLAGS = -Wall -Wextra -Werror -Wpedantic -std=c++98 -Isrc -Iincludes
 
 NAME = ircserv
 

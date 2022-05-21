@@ -239,7 +239,6 @@ public:
 
 	void handlerInvite(const std::string& nickname, const std::string& channelName)
 	{
-		// TODO mb reply to invited user?
 		User *user = findByNickname(_users, nickname);
 		Channel *channel = findByName(_channels, channelName);
 
