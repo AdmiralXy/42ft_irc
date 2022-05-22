@@ -57,11 +57,6 @@ public:
 		return _message;
 	}
 
-	void setMessage(const std::vector<std::string> &message)
-	{
-		_message = message;
-	}
-
 	bool isActive() const
 	{
 		return _active;
@@ -92,19 +87,9 @@ public:
 		_nickname = nickname;
 	}
 
-	const std::string &getUsername() const
-	{
-		return _username;
-	}
-
 	void setUsername(const std::string &username)
 	{
 		_username = username;
-	}
-
-	const std::string &getRealname() const
-	{
-		return _realname;
 	}
 
 	void setRealname(const std::string &realname)

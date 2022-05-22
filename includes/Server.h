@@ -30,15 +30,14 @@ public:
 
 	void bindSocket()
 	{
-		int optval = 1;
+		int buffer = 1;
 		_sockaddr.sin_family = AF_INET;
 		_sockaddr.sin_port = htons(_port);
 		_sockaddr.sin_addr.s_addr = 0UL;
-		if ((setsockopt(_listening, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int))) == -1) {
+		if ((setsockopt(_listening, SOL_SOCKET, SO_REUSEADDR, &buffer, sizeof(int))) == -1) {
 			close(_listening);
 			ft::exception(ERROR_SOCKET_SET);
-		}
-		if (bind(_listening, (struct sockaddr *)&_sockaddr, sizeof(_sockaddr)) < 0) {
+		} else if (bind(_listening, (struct sockaddr *)&_sockaddr, sizeof(_sockaddr)) < 0) {
 			close(_listening);
 			ft::exception(ERROR_IP_BIND);
 		}
@@ -46,7 +45,8 @@ public:
 
 	void listenSocket() const
 	{
-		if (listen(_listening, SOMAXCONN) == -1) {
+		if (listen(_listening, SOMAXCONN) == -1)
+		{
 			close(_listening);
 			ft::exception(ERROR_SOCKET_LISTEN);
 		}

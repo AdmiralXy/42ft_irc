@@ -62,7 +62,7 @@ public:
 				handlerOper(input_fs, input_sc);
 			else if (cmd == "SQUIT" && validate(2, command, "SQUIT %s %[^\t\n]", input_fs, input_sc))
 				isSquit = handlerSquit(input_fs, input_sc);
-			else if (cmd == "INVITE" && validate(2, command, "INVITE %s %s", input_fs, input_sc))
+			else if (cmd == "INVITE" && validate(2, command, "INVITE %s %[^\t\n]", input_fs, input_sc))
 				handlerInvite(input_fs, input_sc);
 			else if (cmd == "TOPIC" && validate(2, command, "TOPIC %s :%[^\t\n]", input_fs, input_sc))
 				handlerTopic(input_fs, input_sc);
