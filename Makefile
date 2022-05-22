@@ -26,7 +26,7 @@ $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 	@echo "Binary \033[0;32m$(NAME)\033[0m successfully linked!"
 
-all: $(NAME_UNIT_TESTS) $(NAME_BENCHMARK)
+all: $(NAME)
 
 clean:
 	@$(RM) $(OBJS)
@@ -37,5 +37,8 @@ fclean: clean
 	@echo "Cleanup: \033[0;34mlinked files\033[0m"
 
 re: clean all
+
+leaks: all
+	valgrind ./$(NAME) 3030 123
 
 .PHONY: all
