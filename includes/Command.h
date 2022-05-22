@@ -278,6 +278,7 @@ private:
 		User *bot = channel->getUserByNickname(SERVER_IRC_BOT_NICKNAME);
 		if (bot)
 		{
+			std::srand(std::time(0));
 			if (message == "Bot, what time is it?") {
 				channel->messageChannelExceptUser(bot->getPrefix(), command, ft::format("%s %s", target.c_str(), ft::currentDateTime().c_str()), *bot);
 			} else if (message == "Bot, roll") {
