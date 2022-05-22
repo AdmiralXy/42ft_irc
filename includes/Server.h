@@ -12,13 +12,11 @@ private:
 	int						_port;
 	std::string				_password;
 	int						_listening;
-	sockaddr_in				_sockaddr;
-	int						_clientSocket;
 	std::vector<pollfd>		_fdUsers;
 	std::vector<User*>		_users;
 	std::vector<Channel*>	_channels;
 public:
-	Server(int port, const std::string &password) : _port(port), _password(password), _listening(), _sockaddr(), _clientSocket() {}
+	Server(int port, const std::string &password) : _port(port), _password(password), _listening() {}
 
 	void createSocket()
 	{
@@ -30,14 +28,16 @@ public:
 
 	void bindSocket()
 	{
-		int buffer = 1;
-		_sockaddr.sin_family = AF_INET;
-		_sockaddr.sin_port = htons(_port);
-		_sockaddr.sin_addr.s_addr = 0UL;
+		int				buffer = 1;
+		sockaddr_in		sockaddr_in;
+
+		sockaddr_in.sin_family = AF_INET;
+		sockaddr_in.sin_port = htons(_port);
+		sockaddr_in.sin_addr.s_addr = 0UL;
 		if ((setsockopt(_listening, SOL_SOCKET, SO_REUSEADDR, &buffer, sizeof(int))) == -1) {
 			close(_listening);
 			ft::exception(ERROR_SOCKET_SET);
-		} else if (bind(_listening, (struct sockaddr *)&_sockaddr, sizeof(_sockaddr)) < 0) {
+		} else if (bind(_listening, (struct sockaddr *)&sockaddr_in, sizeof(sockaddr_in)) < 0) {
 			close(_listening);
 			ft::exception(ERROR_IP_BIND);
 		}
@@ -53,14 +53,16 @@ public:
 		fcntl(_listening, F_SETFL, O_NONBLOCK);
 	}
 
-	void acceptUsers()
+	void acceptConnections()
 	{
-		sockaddr_in	client;
-		socklen_t clientSize = sizeof(client);
+		int				_clientSocket;
+		char			host[INET_ADDRSTRLEN];
+		sockaddr_in		client;
+		socklen_t		clientSize = sizeof(client);
+
 		_clientSocket = accept(_listening, (sockaddr *)&client, &clientSize);
-		if (_clientSocket >= 0)
+		if (_clientSocket > -1)
 		{
-			char host[INET_ADDRSTRLEN];
 			memset(host, 0, INET_ADDRSTRLEN);
 			inet_ntop(AF_INET, &(client.sin_addr), host, INET_ADDRSTRLEN);
 			std::cout << "Accepted connection from " << host << ":" << ntohs(client.sin_port) << std::endl;
@@ -99,7 +101,7 @@ public:
 							{
 								Command command(*_users[idx], messages.front(), _users, _channels, _password);
 								if (command.execute())
-									return clearAll();
+									return clear();
 								messages.erase(messages.begin());
 							}
 						}
@@ -151,18 +153,7 @@ public:
 		}
 	}
 
-	bool clearAll()
-	{
-		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
-			delete *it;
-		for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
-			delete *it;
-		_users.clear();
-		_channels.clear();
-		return true;
-	}
-
-	void addBot()
+	void connectBot()
 	{
 		std::cout << "IRC BOT connected..." << std::endl;
 		User *user = new User(-1, SERVER_NAME);
@@ -178,5 +169,16 @@ public:
 		pfd.revents = POLLERR;
 		_fdUsers.push_back(pfd);
 		_users.push_back(user);
+	}
+
+	bool clear()
+	{
+		for (std::vector<User*>::iterator it = _users.begin(); it != _users.end(); it++)
+			delete *it;
+		for (std::vector<Channel*>::iterator it = _channels.begin(); it != _channels.end(); it++)
+			delete *it;
+		_users.clear();
+		_channels.clear();
+		return true;
 	}
 };
