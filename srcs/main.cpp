@@ -14,10 +14,10 @@ int main(int argc, char **argv)
 	server.createSocket();
 	server.bindSocket();
 	server.listenSocket();
-	server.connectBot();
+	server.addBot();
 	while (!shutdown)
 	{
-		server.acceptConnections();
+		server.acceptUsers();
 		shutdown = server.receiveMessages();
 		server.clearInactive();
 	}

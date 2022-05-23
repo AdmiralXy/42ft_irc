@@ -20,30 +20,29 @@ public:
 
 	int readMessage()
 	{
-		char		buf[4096];
-		std::string	message;
+		char buf[4096];
+		std::string msg;
 
 		for(;;) {
 			memset(buf, 0, 4096);
-			int bytes = recv(_socket, buf, 4095, 0);
-			if (bytes > 0)
-			{
-				buf[bytes] = '\0';
-				message += buf;
-				if (message == "\n" || message.empty())
+			int bytesRecv = recv(_socket, buf, 4095, 0);
+			if (bytesRecv > 0) {
+				buf[bytesRecv] = 0;
+				msg += buf;
+				if (msg == "\n" || msg.empty())
 				{
-					message = "";
+					msg = "";
 					continue;
 				}
-				std::cout << "IN ->  " << message;
-				if (message.find('\n') != std::string::npos) {
+				std::cout << "IN ->  " << msg;
+				if (msg.find('\n') != std::string::npos) {
 					break;
 				}
 			}
-			if (bytes <= 0)
+			if (bytesRecv <= 0)
 				return (-1);
 		}
-		std::vector<std::string> vector = ft::split(message, "\r\n");
+		std::vector<std::string> vector = ft::split(msg, "\r\n");
 		_message.insert(_message.begin(), vector.begin(), vector.end());
 		return (0);
 	}
